@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Support\Str;
+
 
 class Assignment extends Model
 {
     use HasFactory;
+
     protected $table = 'assignment';
     protected $primaryKey = 'assignment_id';
     public $incrementing = false;
