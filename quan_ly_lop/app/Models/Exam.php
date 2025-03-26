@@ -4,37 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Support\Str;
 
-
-class Assignment extends Model
+class Exam extends Model
 {
     use HasFactory;
 
-    protected $table = 'assignment';
-    protected $primaryKey = 'assignment_id';
+    protected $table = 'exam';
+    protected $primaryKey = 'exam_id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'assignment_id',
-        'sub_list_id',  // Khóa phụ
+        'exam_id',
+        'sub_list_id',//Khoá ngoại
         'title',
         'content',
         'type',
         'isSimultaneous',
         'start_time',
         'end_time',
-        'show_result',
         'status',
-    ];
-
-    protected $casts = [
-        'isSimultaneous' => 'boolean',
-        'show_result' => 'boolean',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
     ];
     public $timestamps = true;
 
@@ -42,11 +32,12 @@ class Assignment extends Model
     {
         parent::boot();
 
-        static::creating(function ($assignment) {
-            $assignment->assignment_id = (string) Str::uuid();
+        static::creating(function ($exam) {
+            $exam->exam_id = (string) Str::uuid();
         });
     }
 
+    // Danh sách trạng thái hợp lệ
     public static function getAllowedStatuses()
     {
         return ['Pending', 'Processing', 'Completed'];
@@ -58,7 +49,7 @@ class Assignment extends Model
         return ['Trắc nghiệm', 'Tự luận'];
     }
 
-    // Quan hệ với Course
+    // Quan hệ với sub_list
     public function sublist()
     {
         return $this->belongsTo(SubList::class, 'sub_list_id');
