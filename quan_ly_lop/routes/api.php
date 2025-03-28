@@ -16,6 +16,7 @@ use App\Http\Controllers\SubListController;
 use App\Http\Controllers\SubListQuestionController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\StudentAssignmentController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -156,3 +157,12 @@ Route::prefix('classrooms')->group(function () {
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
 });
+// Nhóm routes cho sinh viên 
+Route::prefix('student')->group(function () {
+    Route::get('/assignments', [StudentAssignmentController::class, 'listAssignments']);
+    Route::get('/exams', [StudentAssignmentController::class, 'listExams']);
+    Route::post('/assignment/{assignmentId}/submit', [StudentAssignmentController::class, 'doAssignment']);
+    Route::post('/exam/{examId}/submit', [StudentAssignmentController::class, 'doExam']);
+    Route::get('/scores', [StudentAssignmentController::class, 'getScores']);
+    Route::get('/submission/{submissionId}/status', [StudentAssignmentController::class, 'getSubmissionStatus']);
+}); 
