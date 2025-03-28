@@ -159,10 +159,12 @@ Route::prefix('classrooms')->group(function () {
 });
 // Nhóm routes cho sinh viên 
 Route::prefix('student')->group(function () {
-    Route::get('/assignments', [StudentAssignmentController::class, 'listAssignments']);
-    Route::get('/exams', [StudentAssignmentController::class, 'listExams']);
-    Route::post('/assignment/{assignmentId}/submit', [StudentAssignmentController::class, 'doAssignment']);
-    Route::post('/exam/{examId}/submit', [StudentAssignmentController::class, 'doExam']);
-    Route::get('/scores', [StudentAssignmentController::class, 'getScores']);
-    Route::get('/submission/{submissionId}/status', [StudentAssignmentController::class, 'getSubmissionStatus']);
+    // bài tập
+    Route::get('/{student_id}/works', [StudentAssignmentController::class, 'getAvailableAssignmentsAndExams']);
+    
+    //
+    Route::post('/{student_id}/submit-work', [StudentAssignmentController::class, 'submitWork']);
+    
+    // diem
+    Route::get('/{student_id}/scores', [StudentAssignmentController::class, 'getScoresAndFeedback']);
 }); 
