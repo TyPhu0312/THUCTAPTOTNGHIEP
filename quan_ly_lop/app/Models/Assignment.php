@@ -64,7 +64,11 @@ class Assignment extends Model
         return $this->belongsTo(SubList::class, 'sub_list_id');
     }
     public function course()
-{
-    return $this->belongsTo(Course::class, 'course_id'); // 'course_id' là tên cột khoá ngoại liên kết đến bảng 'course'
-}
+    {
+        return $this->belongsTo(Course::class, 'course_id'); // 'course_id' là tên cột khoá ngoại liên kết đến bảng 'course'
+    }
+    public function classroom()
+    {
+        return $this->belongsTo(Classroom::class, 'class_id');
+    }
 }

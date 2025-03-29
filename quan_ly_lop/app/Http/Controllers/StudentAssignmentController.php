@@ -2,147 +2,110 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Assignment;
 use App\Models\Exam;
 use App\Models\Submission;
 use App\Models\Score;
-use App\Models\Student; // Thêm model Student
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 class StudentAssignmentController extends Controller
 {
     /**
      * Get list of available assignments and exams for the student
      */
-    public function getAvailableAssignmentsAndExams($student_id)
-    {
-        // Kiểm tra sinh viên tồn tại
-        $student = Student::findOrFail($student_id);
+   // Lấy danh sách bài tập theo lớp học của sinh viên
+   // Lấy danh sách bài tập theo lớp học của sinh viên
+   public function getAssignments($student_id)
+{
+    $assignments = Assignment::whereHas('classroom.studentClasses', function ($query) use ($student_id) {
+        $query->where('student_id', $student_id);
+    })->get();
 
-        // Get current time
-        $now = Carbon::now();
+    return response()->json($assignments);
+}
 
-        // Fetch assignments
-        $assignments = Assignment::where('start_time', '<=', $now)
-            ->where('end_time', '>=', $now)
-            ->where('status', 'Processing')
-            ->get();
+   // Lấy danh sách bài thi theo lớp học của sinh viên
+   public function getExams($student_id)
+   {
+       $exams = Exam::whereHas('classroom.studentClasses', function ($query) use ($student_id) {
+           $query->where('student_id', $student_id);
+       })->get();
 
-        // Fetch exams
-        $exams = Exam::where('start_time', '<=', $now)
-            ->where('end_time', '>=', $now)
-            ->where('status', 'Processing')
-            ->get();
+       return response()->json($exams);
+   }
 
-        // Check submission status for each assignment/exam
-        $assignments->each(function ($assignment) use ($student) {
-            $submission = Submission::where('student_id', $student->id)
-                ->where('assignment_id', $assignment->id)
-                ->first();
-            
-            $assignment->submission_status = $submission ? 
-                ($submission->is_late ? 'Late' : 'Submitted') : 
-                'Not Submitted';
-        });
+   // Nộp bài tập hoặc bài thi
+   public function submitWork(Request $request)
+   {
+       $request->validate([
+           'student_id' => 'required|exists:students,student_id',
+           'exam_id' => 'nullable|exists:exam,exam_id',
+           'assignment_id' => 'nullable|exists:assignment,assignment_id',
+           'answer_file' => 'required|file|max:10240',
+       ]);
 
-        $exams->each(function ($exam) use ($student) {
-            $submission = Submission::where('student_id', $student->id)
-                ->where('exam_id', $exam->id)
-                ->first();
-            
-            $exam->submission_status = $submission ? 
-                ($submission->is_late ? 'Late' : 'Submitted') : 
-                'Not Submitted';
-        });
+       // Kiểm tra nếu cả exam_id và assignment_id đều NULL hoặc cả hai cùng có giá trị
+       if (empty($request->exam_id) == empty($request->assignment_id)) {
+           return response()->json(['message' => 'Bài nộp phải thuộc về một Exam hoặc Assignment.'], 400);
+       }
 
-        return response()->json([
-            'assignments' => $assignments,
-            'exams' => $exams
-        ]);
-    }
+       // Kiểm tra nếu đã nộp bài trước đó
+       $existingSubmission = Submission::where('student_id', $request->student_id)
+           ->where(function ($query) use ($request) {
+               if ($request->has('exam_id')) {
+                   $query->where('exam_id', $request->exam_id);
+               }
+               if ($request->has('assignment_id')) {
+                   $query->where('assignment_id', $request->assignment_id);
+               }
+           })->first();
 
-    /**
-     * Submit assignment or exam
-     */
-    public function submitWork(Request $request, $student_id)
-    {
-        // Kiểm tra sinh viên tồn tại
-        $student = Student::findOrFail($student_id);
+       if ($existingSubmission) {
+           return response()->json(['message' => 'Bạn đã nộp bài trước đó!'], 400);
+       }
 
-        $validatedData = $request->validate([
-            'work_type' => 'required|in:assignment,exam',
-            'work_id' => 'required|uuid',
-            'answer_file' => 'required|file|max:10240', // Max 10MB
-        ]);
+       // Lưu file bài nộp
+       $filePath = $request->file('answer_file')->store('submissions');
 
-        $now = Carbon::now();
+       // Kiểm tra trễ hạn
+       $isLate = false;
+       if ($request->has('exam_id')) {
+           $exam = Exam::find($request->exam_id);
+           if (now()->greaterThan($exam->due_date)) {
+               $isLate = true;
+           }
+       } elseif ($request->has('assignment_id')) {
+           $assignment = Assignment::find($request->assignment_id);
+           if (now()->greaterThan($assignment->due_date)) {
+               $isLate = true;
+           }
+       }
 
-        if ($validatedData['work_type'] === 'assignment') {
-            $work = Assignment::findOrFail($validatedData['work_id']);
-        } else {
-            $work = Exam::findOrFail($validatedData['work_id']);
-        }
+       // Lưu bài nộp
+       $submission = Submission::create([
+           'student_id' => $request->student_id,
+           'exam_id' => $request->exam_id,
+           'assignment_id' => $request->assignment_id,
+           'answer_file' => $filePath,
+           'is_late' => $isLate,
+           'temporary_score' => null,
+       ]);
 
-        // Check if submission is within time
-        $isLate = $now > $work->end_time;
+       return response()->json(['message' => 'Nộp bài thành công!', 'submission' => $submission], 201);
+   }
 
-        // Store file
-        $filePath = $request->file('answer_file')->store('submissions');
+   // Xem trạng thái bài nộp của sinh viên
+   public function getSubmissionStatus($student_id)
+   {
+       $submissions = Submission::where('student_id', $student_id)->get();
+       return response()->json($submissions);
+   }
 
-        // Create submission
-        $submission = Submission::create([
-            'student_id' => $student->id,
-            'assignment_id' => $validatedData['work_type'] === 'assignment' ? $work->id : null,
-            'exam_id' => $validatedData['work_type'] === 'exam' ? $work->id : null,
-            'answer_file' => $filePath,
-            'is_late' => $isLate
-        ]);
-
-        return response()->json([
-            'message' => 'Submission successful',
-            'is_late' => $isLate,
-            'submission_id' => $submission->id
-        ]);
-    }
-
-    /**
-     * Get student's scores and feedback
-     */
-    public function getScoresAndFeedback($student_id)
-    {
-        // Kiểm tra sinh viên tồn tại
-        $student = Student::findOrFail($student_id);
-
-        // Get submissions with scores
-        $submissions = Submission::with(['exam', 'assignment'])
-            ->where('student_id', $student->id)
-            ->get();
-
-        // Process submissions to include scores
-        $submissionScores = $submissions->map(function ($submission) {
-            $work = $submission->exam ?? $submission->assignment;
-            $workType = $submission->exam_id ? 'exam' : 'assignment';
-
-            return [
-                'id' => $submission->id,
-                'title' => $work->title,
-                'type' => $workType,
-                'submitted_at' => $submission->created_at,
-                'is_late' => $submission->is_late,
-                'temporary_score' => $submission->temporary_score,
-                'status' => $submission->temporary_score !== null ? 'Graded' : 'Pending Grading'
-            ];
-        });
-
-        // Get overall course scores
-        $courseScores = Score::where('student_id', $student->id)
-            ->with('course')
-            ->get();
-
-        return response()->json([
-            'submission_scores' => $submissionScores,
-            'course_scores' => $courseScores
-        ]);
-    }
+   // Xem điểm của từng bài tập, bài thi
+   public function getScores($student_id)
+   {
+       $scores = Score::where('student_id', $student_id)->get();
+       return response()->json($scores);
+   }
 }

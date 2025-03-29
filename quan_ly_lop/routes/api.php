@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExamController;
@@ -159,12 +160,14 @@ Route::prefix('classrooms')->group(function () {
 });
 // Nhóm routes cho sinh viên 
 Route::prefix('student')->group(function () {
-    // bài tập
-    Route::get('/{student_id}/works', [StudentAssignmentController::class, 'getAvailableAssignmentsAndExams']);
-    
-    //
-    Route::post('/{student_id}/submit-work', [StudentAssignmentController::class, 'submitWork']);
-    
-    // diem
-    Route::get('/{student_id}/scores', [StudentAssignmentController::class, 'getScoresAndFeedback']);
-}); 
+    // Xem danh sách bài thi
+    Route::get('/exams/{student_id}', [StudentAssignmentController::class, 'getExams']);
+    // Xem danh sách bài tập
+    Route::get('/assignments/{student_id}', [StudentAssignmentController::class, 'getAssignments']);
+    // Nộp bài tập/bài thi
+    Route::post('/submit', [StudentAssignmentController::class, 'submitWork']);
+    // Xem trạng thái bài làm
+    Route::get('/submission-status/{student_id}', [StudentAssignmentController::class, 'getSubmissionStatus']);
+    // Xem điểm bài thi, bài tập
+    Route::get('/scores/submission-status/{student_id}', [StudentAssignmentController::class, 'getScores']);
+});
