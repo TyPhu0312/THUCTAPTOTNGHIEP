@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class Classroom extends Model
 {
     use HasFactory;
-    protected $table = 'classroom';
+    protected $table = 'class';
     protected $primaryKey = 'class_id';
     public $incrementing = false;
     protected $keyType = 'string';
