@@ -113,9 +113,21 @@
                     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle"></i>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Đăng nhập</a></li>
-                        <li><a class="dropdown-item" href="#">Đăng ký</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @auth
+                            <li><a class="dropdown-item" href="#">{{ Auth::user()->full_name }}</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile') }}">Thông tin cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                </form>
+                            </li>
+                        @else
+                            <li><a class="dropdown-item" href="{{ route('login') }}">Đăng nhập</a></li>
+                            <li><a class="dropdown-item" href="{{ route('register') }}">Đăng ký</a></li>
+                        @endauth
                     </ul>
                 </li>
             </ul>

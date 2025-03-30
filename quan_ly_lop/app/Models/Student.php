@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class Student extends Model
+class Student extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
+
     protected $table = 'student';
     protected $primaryKey = 'student_id';
     public $incrementing = false;
@@ -16,24 +18,29 @@ class Student extends Model
 
     protected $fillable = [
         'student_id',
-        'student_code', // Duy nhất
+        'student_code',
         'full_name',
-        'school_email', // Duy nhất
+        'school_email',
+        'phone',
         'password',
-        'phone', // Duy nhất
     ];
     public $timestamps = true;
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
     protected $casts = [
-        'password' => 'hashed', // Laravel sẽ tự động hash mật khẩu khi lưu vào DB
+        'email_verified_at' => 'datetime',
     ];
     protected static function boot()
     {
         parent::boot();
-        static::creating(fn($student) => $student->student_id = (string) Str::uuid());
+        static::creating(function ($model) {
+            if (!$model->student_id) {
+                $model->student_id = (string) Str::uuid();
+            }
+        });
     }
 
     public function scores()
@@ -44,5 +51,42 @@ class Student extends Model
     public function studentClasses()
     {
         return $this->hasMany(StudentClass::class, 'student_id');
+    }
+
+    // Thêm các phương thức xác thực
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'student_id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getAttribute($this->getAuthIdentifierName());
+    }
+
+    public function getRememberToken()
+    {
+        return $this->remember_token;
+    }
+
+    public function setRememberToken($value)
+    {
+        $this->remember_token = $value;
+    }
+
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
+    }
+
+    // Thêm phương thức này để xác định trường dùng để đăng nhập
+    public function username()
+    {
+        return 'school_email';
     }
 }

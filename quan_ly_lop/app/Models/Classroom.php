@@ -36,6 +36,11 @@ class Classroom extends Model
         'class_duration' => 'integer',
     ];
 
+    // Quan hệ với StudentClass
+    public function studentClasses()
+    {
+        return $this->hasMany(StudentClass::class, 'class_id');
+    }
 
     // Quan hệ với Course
     public function course()
