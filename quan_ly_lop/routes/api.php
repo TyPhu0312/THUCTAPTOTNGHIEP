@@ -38,6 +38,7 @@ Route::prefix('score')->group(function () {
     Route::get('/', [ScoresController::class, 'index']);
     Route::post('/create', [ScoresController::class, 'store']);
     Route::get('/getById/{id}', [ScoresController::class, 'show']);
+    Route::get('/getAllScoresStudentByStudentId/{studentId}', [ScoresController::class, 'getAllScoresStudentByStudentId']);
     Route::put('/update/{id}', [ScoresController::class, 'update']);
     Route::delete('/delete/{id}', [ScoresController::class, 'destroy']);
 });
@@ -158,26 +159,26 @@ Route::prefix('classrooms')->group(function () {
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
 });
-// Nhóm routes cho sinh viên 
+// Nhóm routes cho sinh viên
 Route::prefix('student')->group(function () {
     // Xem danh sách bài thi
     Route::get('/exams/{student_id}', [StudentAssignmentController::class, 'getExams']);
-    
+
     // Xem danh sách bài tập
     Route::get('/assignments/{student_id}', [StudentAssignmentController::class, 'getAssignments']);
-    
+
     // Nộp bài tập/bài thi (file)
     Route::post('/submit', [StudentAssignmentController::class, 'submitWork']);
-    
+
     // Nộp câu trả lời cho các câu hỏi
     Route::post('/submit-answers', [StudentAssignmentController::class, 'submitAnswers']);
-    
+
     // Xem trạng thái bài làm
     Route::get('/submission-status/{student_id}', [StudentAssignmentController::class, 'getSubmissionStatus']);
-    
+
     // Xem điểm bài thi, bài tập
     Route::get('/scores/{student_id}', [StudentAssignmentController::class, 'getScores']);
-    
+
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
 });
