@@ -38,5 +38,9 @@ class Course extends Model
             $course->course_id = (string) Str::uuid();
         });
     }
-
+    // Trong App\Models\Course
+    public function classroom()
+    {
+        return $this->hasMany(Classroom::class, 'course_id');
+    }
 }

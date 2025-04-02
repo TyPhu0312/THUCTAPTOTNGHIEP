@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
 class Classroom extends Model
 {
     use HasFactory;
-    protected $table = 'classroom';
+    protected $table = 'class';
     protected $primaryKey = 'class_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -16,7 +17,7 @@ class Classroom extends Model
     protected $fillable = [
         'class_id',
         'course_id',  // Khóa phụ
-        'lecturer_id',//khoá phụ
+        'lecturer_id', //khoá phụ
         'class_code',
         'class_description',
         'class_duration',
@@ -47,9 +48,13 @@ class Classroom extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
-     // Quan hệ với Lecturer
-     public function lecturer()
-     {
-         return $this->belongsTo(Lecturer::class, 'lecturer_id');
-     }
+    // Quan hệ với Lecturer
+    public function lecturer()
+    {
+        return $this->belongsTo(Lecturer::class, 'lecturer_id');
+    }
+    public function studentClasses()
+    {
+        return $this->hasMany(StudentClass::class, 'class_id'); 
+    }
 }
