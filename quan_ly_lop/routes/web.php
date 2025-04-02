@@ -2,17 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
+/* STUDENT */
 Route::get('/', function () {
     return view('homepage');
 })->name('home');
@@ -25,4 +15,12 @@ Route::get('/account', function () {
 Route::get('/todopage', function () {
     return view('todopage');
 })->name('todopage');
+
+/* LECTURER */
+Route::get('/homepage_lecture', function () {
+    return view('lecturerViews.homepage_lecture');
+})->name('homepage_lecture');
+Route::get('/create_questionBank', function () {
+    return view('lecturerViews.question_bank');
+})->name('create_questionBank');
 

@@ -58,7 +58,7 @@ class Exercise extends Controller
                 'status' => false,
                 'message' => 'Failed to create assignment',
                 'error' => $e->getMessage()
-            ], 500);
+            ], status: 500);
         }
     }
 }
