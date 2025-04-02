@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MyClassController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClassroomController;
-
+use App\Http\Controllers\PDFController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -48,3 +48,4 @@ Route::middleware('auth')->group(function () {
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
 });
 
+Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
