@@ -58,7 +58,8 @@
         margin-bottom: 0.5rem;
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         border-radius: 0.5rem;
         border: 1px solid var(--border-color);
         padding: 0.75rem 1rem;
@@ -66,7 +67,8 @@
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus,
+    .form-select:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
     }
@@ -290,7 +292,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             @auth
-                <form id="courseForm" action="{{ route('questions.store') }}" method="POST">
+                <form id="courseForm" action="/api/questions/create" method="POST">
                     @csrf
                     <select name="course_id" id="courseSelect" class="form-select">
                         <option selected disabled>-- Chọn môn học --</option>
@@ -421,8 +423,8 @@
                             <p><em>Loại câu hỏi: ${question.type}</em></p>
                             <ul>
                                 ${question.options.map(option =>
-                                    `<li>${option.option_text} ${option.is_correct ? '(Đúng)' : ''}</li>`
-                                ).join('')}
+                        `<li>${option.option_text} ${option.is_correct ? '(Đúng)' : ''}</li>`
+                    ).join('')}
                             </ul>
                             <button class="btn btn-danger btn-sm delete-question" data-index="${index}">
                                 Xóa câu hỏi
@@ -513,7 +515,7 @@
                 console.log("Request body:", { course_id: courseId });
                 console.log("CSRF Token:", csrfToken);
 
-                fetch("/api/list-questions", {
+                fetch("/api/list-questions/create", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -521,36 +523,36 @@
                     },
                     body: JSON.stringify({ course_id: courseId })
                 })
-                .then(response => {
-                    console.log("Response status:", response.status); // Kiểm tra status code
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Response data:", data); // Kiểm tra dữ liệu trả về
-                    if (data.id) {
-                        console.log("Saving list_question_id to localStorage:", data.id);
-                        localStorage.setItem("list_question_id", data.id);
-                        localStorage.setItem('questions', JSON.stringify([])); // Khởi tạo mảng câu hỏi rỗng
-                        alert("Danh sách câu hỏi đã được tạo!");
-                        questionForm.style.display = 'block';
-                        temporaryQuestionsSection.style.display = 'block';
-                        renderTemporaryQuestions();
-                    } else {
-                        console.error("No id in response data:", data);
-                        alert(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error calling API:", error);
-                    alert("Có lỗi xảy ra: " + error.message);
-                })
-                .finally(() => {
-                    startButton.disabled = false;
-                    startButton.innerHTML = 'Bắt đầu tạo bộ câu hỏi';
-                });
+                    .then(response => {
+                        console.log("Response status:", response.status);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Response data:", data);
+                        if (data.id) {
+                            console.log("Saving list_question_id to localStorage:", data.id);
+                            localStorage.setItem("list_question_id", data.id);
+                            localStorage.setItem('questions', JSON.stringify([]));
+                            alert("Danh sách câu hỏi đã được tạo!");
+                            questionForm.style.display = 'block';
+                            temporaryQuestionsSection.style.display = 'block';
+                            renderTemporaryQuestions();
+                        } else {
+                            console.error("No id in response data:", data);
+                            alert(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error calling API:", error);
+                        alert("Có lỗi xảy ra: " + error.message);
+                    })
+                    .finally(() => {
+                        startButton.disabled = false;
+                        startButton.innerHTML = 'Bắt đầu tạo bộ câu hỏi';
+                    });
             });
         } else {
             console.error("Start button not found"); // Kiểm tra nếu không tìm thấy nút
@@ -654,32 +656,32 @@
                         questions: savedQuestions
                     })
                 })
-                .then(response => {
-                    console.log("Response status:", response.status); // Kiểm tra status code
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Response data:", data); // Kiểm tra dữ liệu trả về
-                    if (data.success) {
-                        localStorage.removeItem('questions');
-                        localStorage.removeItem('list_question_id');
-                        alert("Tất cả câu hỏi đã được lưu thành công!");
-                        window.location.href = '/questions';
-                    } else {
-                        alert("Lỗi: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi:", error);
-                    alert("Có lỗi xảy ra: " + error.message);
-                })
-                .finally(() => {
-                    finishCreatingButton.disabled = false;
-                    finishCreatingButton.innerHTML = 'Hoàn Thành';
-                });
+                    .then(response => {
+                        console.log("Response status:", response.status); // Kiểm tra status code
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Response data:", data); // Kiểm tra dữ liệu trả về
+                        if (data.success) {
+                            localStorage.removeItem('questions');
+                            localStorage.removeItem('list_question_id');
+                            alert("Tất cả câu hỏi đã được lưu thành công!");
+                            window.location.href = '/questions';
+                        } else {
+                            alert("Lỗi: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi:", error);
+                        alert("Có lỗi xảy ra: " + error.message);
+                    })
+                    .finally(() => {
+                        finishCreatingButton.disabled = false;
+                        finishCreatingButton.innerHTML = 'Hoàn Thành';
+                    });
             });
         } else {
             console.error("Finish button not found"); // Kiểm tra nếu không tìm thấy nút

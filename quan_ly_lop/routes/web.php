@@ -13,16 +13,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ListQuestionController;
 use App\Http\Controllers\OptionsController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\ExamController;
+use App\Http\Controllers\AssignmentController;
 
 // Route công khai
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -41,9 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/myclass', [MyClassController::class, 'index'])->name('myclass');
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
-    Route::get('/todopage', function () {
-        return view('todopage');
-    })->name('todopage');
+    Route::get('/todopage', [AssignmentController::class, 'index'])->name('todopage');
+    Route::get('/todopage', [ExamController::class, 'index'])->name('todopage');
+    Route::get('/createQuestion', [ListQuestionController::class, 'index'])->name('createQuestion');
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
@@ -51,21 +43,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/class/{class_code}', [ClassroomController::class, 'show'])->name('classroom.show');
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
     Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
-    Route::get('/createQuestion', [ListQuestionController::class, 'index'])->name('createQuestion');
-    // Routes tạo câu hỏi cho giảng viên
+
+
     // API tạo và quản lý danh sách câu hỏi
-    Route::post('/list-questions', [ListQuestionController::class, 'store']);
+    Route::post('/list-questions/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
     Route::get('/list-questions', [ListQuestionController::class, 'index']);
-
-    // API quản lý câu hỏi
-    Route::post('/questions/batch', [QuestionController::class, 'storeBatch']); // API mới để lưu nhiều câu hỏi
-    Route::resource('/questions', QuestionController::class);
-
+    Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
+    // API tạo và quản lý câu hỏi
+    Route::get('/questions', [QuestionController::class, 'index']);
+    Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
     // API quản lý lựa chọn (options)
     Route::get('/questions/{questionId}/options', [OptionsController::class, 'index']);
     Route::post('/questions/{questionId}/options', [OptionsController::class, 'store']);
-    Route::resource('/options', OptionsController::class);
+    Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+    // API quản lý bài thi
+    Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
+    Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
+    Route::get('/exams/{id}', [ExamController::class, 'show'])->name('exams.show');
+    // API quản lý bài tập
+    Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 

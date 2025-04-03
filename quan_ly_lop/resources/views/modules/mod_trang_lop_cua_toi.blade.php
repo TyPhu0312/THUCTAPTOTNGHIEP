@@ -123,7 +123,7 @@
                             <div class="class-card-body">
                                 <h5 class="class-title">{{ $class['title'] }}</h5>
                                 <p class="class-description">{{ $class['description'] }}</p>
-                                
+
                                 <div class="class-info">
                                     <div class="info-item">
                                         <i class="fas fa-chalkboard-teacher"></i>

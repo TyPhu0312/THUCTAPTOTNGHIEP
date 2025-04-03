@@ -7,11 +7,13 @@
         transition: all 0.3s ease;
         /* Mượt mà khi hover */
         position: relative;
-        font-size: 1.1rem; /* Tăng size chữ cho link */
+        font-size: 1.1rem;
+        /* Tăng size chữ cho link */
     }
 
     .navbar-nav {
-        font-size: 1.1rem; /* Tăng size chữ toàn bộ navbar */
+        font-size: 1.1rem;
+        /* Tăng size chữ toàn bộ navbar */
     }
 
     .nav-link.dropdown-toggle::after {
@@ -54,13 +56,16 @@
 
     /* Tăng size icon */
     .navbar-nav .bi {
-        font-size: 1.8rem; /* Kích thước icon lớn hơn */
+        font-size: 1.8rem;
+        /* Kích thước icon lớn hơn */
     }
 
     @media (max-width: 768px) {
         .nav-link {
-            font-size: 1rem; /* Trên mobile nhỏ lại chút */
+            font-size: 1rem;
+            /* Trên mobile nhỏ lại chút */
         }
+
         .navbar-nav .bi {
             font-size: 1.5rem;
         }
@@ -122,7 +127,9 @@
                         @auth
                             <li><a class="dropdown-item" href="#">{{ Auth::user()->full_name }}</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile') }}">Thông tin cá nhân</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf

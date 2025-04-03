@@ -13,9 +13,10 @@ class AssignmentController extends Controller
      */
     public function index()
     {
-        return response()->json(Assignment::all());
+        {
+            return view('todopage');
+        }
     }
-
     /**
      * Lấy chi tiết một bài tập
      */
