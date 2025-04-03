@@ -17,13 +17,17 @@ class Submission extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'submission_id',
-        'student_id',
-        'exam_id',
         'assignment_id',
-        'answer_file',
-        'is_late',
-        'temporary_score',
+        'student_id',
+        'content',
+        'file_path',
+        'submitted_at',
+        'score',
+        'feedback'
+    ];
+
+    protected $casts = [
+        'submitted_at' => 'datetime'
     ];
 
     public $timestamps = true;
@@ -52,19 +56,18 @@ class Submission extends Model
         });
     }
 
+    public function assignment()
+    {
+        return $this->belongsTo(Assignment::class);
+    }
 
     public function student()
     {
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(User::class, 'student_id');
     }
 
     public function exam()
     {
         return $this->belongsTo(Exam::class, 'exam_id');
-    }
-
-    public function assignment()
-    {
-        return $this->belongsTo(Assignment::class, 'assignment_id');
     }
 }
