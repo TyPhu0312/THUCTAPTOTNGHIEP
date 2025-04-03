@@ -107,7 +107,12 @@
                         VIỆC CẦN LÀM
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link {{ $currentRoute == 'createQuestion' ? 'active-nav' : '' }}"
+                        href="{{ route('createQuestion') }}">
+                        TẠO BÀI THI
+                    </a>
+                </li>
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">

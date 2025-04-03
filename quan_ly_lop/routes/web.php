@@ -9,6 +9,10 @@ use App\Http\Controllers\MyClassController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\ListQuestionController;
+use App\Http\Controllers\OptionsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,6 +50,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-classes', [MyClassController::class, 'index'])->name('my-classes');
     Route::get('/class/{class_code}', [ClassroomController::class, 'show'])->name('classroom.show');
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
-});
+    Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
+    Route::get('/createQuestion', [ListQuestionController::class, 'index'])->name('createQuestion');
+    // Routes tạo câu hỏi cho giảng viên
+    // API tạo và quản lý danh sách câu hỏi
+    Route::post('/list-questions', [ListQuestionController::class, 'store']);
+    Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
+    Route::get('/list-questions', [ListQuestionController::class, 'index']);
 
-Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
+    // API quản lý câu hỏi
+    Route::post('/questions/batch', [QuestionController::class, 'storeBatch']); // API mới để lưu nhiều câu hỏi
+    Route::resource('/questions', QuestionController::class);
+
+    // API quản lý lựa chọn (options)
+    Route::get('/questions/{questionId}/options', [OptionsController::class, 'index']);
+    Route::post('/questions/{questionId}/options', [OptionsController::class, 'store']);
+    Route::resource('/options', OptionsController::class);
+});
+Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+

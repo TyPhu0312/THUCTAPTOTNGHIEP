@@ -32,4 +32,8 @@ class ListQuestion extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'list_question_id');
+    }
 }

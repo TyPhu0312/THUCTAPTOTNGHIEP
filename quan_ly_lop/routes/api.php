@@ -91,6 +91,7 @@ Route::prefix('lecturers')->group(function () {
 // API cho ListQuestion
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
+    Route::post('/createFromWeb', [ListQuestionController::class, 'storeFromWeb']);
     Route::post('/create', [ListQuestionController::class, 'store']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);

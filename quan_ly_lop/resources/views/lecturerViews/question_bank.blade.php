@@ -1,5 +1,5 @@
-@extends('templates.template_lecture')
+@extends('layouts.app')
 
 @section('main-content')
-    @include('modules.mod_lecturer.mod_trang_chu_lecturer')
+    @include('modules.mod_lecturer.mod_createQuestionBank')
 @endsection
