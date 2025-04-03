@@ -3,43 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\Options;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class OptionsController extends Controller
 {
-    // Lấy danh sách tất cả Options
-    public function index()
+    // Lấy tất cả các lựa chọn của một câu hỏi
+    public function index($questionId)
     {
-        return response()->json(Options::all());
+        $question = Question::find($questionId);
+        if (!$question) {
+            return response()->json(['message' => 'Không tìm thấy câu hỏi!'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Trả về tất cả các lựa chọn (options) của câu hỏi
+        return response()->json($question->options);
     }
 
-    // Lấy thông tin chi tiết một Option
+    // Lấy thông tin chi tiết một lựa chọn
     public function show($id)
     {
         $option = Options::find($id);
         if (!$option) {
             return response()->json(['message' => 'Không tìm thấy lựa chọn!'], Response::HTTP_NOT_FOUND);
         }
+
         return response()->json($option);
     }
 
-    // Tạo mới một Option
-    public function store(Request $request)
+    // Tạo mới các lựa chọn cho câu hỏi
+    public function store(Request $request, $questionId)
     {
+        // Kiểm tra sự tồn tại của câu hỏi
+        $question = Question::find($questionId);
+        if (!$question) {
+            return response()->json(['message' => 'Không tìm thấy câu hỏi!'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Xác thực dữ liệu đầu vào
         $validatedData = $request->validate([
-            'question_id' => 'required|string|exists:questions,question_id',
             'option_text' => 'required|string',
             'is_correct' => 'required|boolean',
             'option_order' => 'nullable|integer',
         ]);
 
-        $option = Options::create($validatedData);
+        // Thêm lựa chọn mới cho câu hỏi
+        $option = $question->options()->create($validatedData);
 
         return response()->json($option, Response::HTTP_CREATED);
     }
 
-    // Cập nhật thông tin Option
+    // Cập nhật thông tin một lựa chọn
     public function update(Request $request, $id)
     {
         $option = Options::find($id);
@@ -47,19 +62,20 @@ class OptionsController extends Controller
             return response()->json(['message' => 'Không tìm thấy lựa chọn!'], Response::HTTP_NOT_FOUND);
         }
 
+        // Xác thực dữ liệu đầu vào
         $validatedData = $request->validate([
-            'question_id' => 'required|string|exists:questions,question_id',
             'option_text' => 'required|string',
             'is_correct' => 'required|boolean',
             'option_order' => 'nullable|integer',
         ]);
 
+        // Cập nhật thông tin lựa chọn
         $option->update($validatedData);
 
         return response()->json($option);
     }
 
-    // Xóa một Option
+    // Xóa một lựa chọn
     public function destroy($id)
     {
         $option = Options::find($id);
@@ -67,6 +83,7 @@ class OptionsController extends Controller
             return response()->json(['message' => 'Không tìm thấy lựa chọn!'], Response::HTTP_NOT_FOUND);
         }
 
+        // Xóa lựa chọn
         $option->delete();
 
         return response()->json(['message' => 'Lựa chọn đã được xóa thành công!'], Response::HTTP_OK);

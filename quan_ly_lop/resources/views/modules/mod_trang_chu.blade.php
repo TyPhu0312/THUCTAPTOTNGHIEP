@@ -77,14 +77,14 @@
                                         </div>
                                         <h5 class="card-title">{{ $class['title'] }}</h5>
                                         <p class="card-text text-muted">{{ $class['description'] }}</p>
-                                        
+
                                         @if(isset($class['progress']))
                                             <div class="progress-wrapper mb-3">
                                                 <div class="progress">
-                                                    <div class="progress-bar" role="progressbar" 
+                                                    <div class="progress-bar" role="progressbar"
                                                          style="width: {{ $class['progress'] }}%"
-                                                         aria-valuenow="{{ $class['progress'] }}" 
-                                                         aria-valuemin="0" 
+                                                         aria-valuenow="{{ $class['progress'] }}"
+                                                         aria-valuemin="0"
                                                          aria-valuemax="100">
                                                     </div>
                                                 </div>

@@ -82,7 +82,7 @@
                 class="navbar-nav w-100 d-flex align-items-center justify-content-start justify-content-md-center text-start text-md-center">
 
                 <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'home' ? 'active-nav' : '' }}" href="{{ route('home') }}">
+                    <a class="nav-link {{ $currentRoute == 'home' ? 'active-nav' : '' }}" href="{{ route('homepage_lecture') }}">
                         TRANG CHỦ
                     </a>
                 </li>
@@ -90,7 +90,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ $currentRoute == 'myclass' ? 'active-nav' : '' }}"
                         href="{{ route('myclass') }}">
-                        LỚP CỦA TÔI
+                        LỚP ĐANG GIẢNG DẠY
                     </a>
                 </li>
 
@@ -100,17 +100,10 @@
                         TÀI KHOẢN
                     </a>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'todopage' ? 'active-nav' : '' }}"
-                        href="{{ route('todopage') }}">
-                        VIỆC CẦN LÀM
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'createQuestion' ? 'active-nav' : '' }}"
-                        href="{{ route('createQuestion') }}">
-                        TẠO BÀI THI
+                    <a class="nav-link {{ $currentRoute == 'account' ? 'active-nav' : '' }}"
+                        href="{{ route('create_questionBank') }}">
+                        KHO ĐỀ THI
                     </a>
                 </li>
                 <!-- Dropdown -->
@@ -118,21 +111,9 @@
                     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        @auth
-                            <li><a class="dropdown-item" href="#">{{ Auth::user()->full_name }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">Thông tin cá nhân</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
-                                </form>
-                            </li>
-                        @else
-                            <li><a class="dropdown-item" href="{{ route('login') }}">Đăng nhập</a></li>
-                            <li><a class="dropdown-item" href="{{ route('register') }}">Đăng ký</a></li>
-                        @endauth
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Đăng nhập</a></li>
+                        <li><a class="dropdown-item" href="#">Đăng ký</a></li>
                     </ul>
                 </li>
             </ul>

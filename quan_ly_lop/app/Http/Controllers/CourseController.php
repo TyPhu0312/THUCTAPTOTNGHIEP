@@ -11,9 +11,17 @@ class CourseController extends Controller
     /**
      * Lấy danh sách tất cả khóa học
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Course::all(), Response::HTTP_OK);
+        $courses = Course::all();
+
+        // Nếu là request API, trả về JSON
+        if ($request->wantsJson()) {
+            return response()->json($courses, Response::HTTP_OK);
+        }
+
+        // Nếu là request từ trình duyệt, trả về view
+        return view('lecturerViews.question_bank', compact('courses'));
     }
 
     /**
@@ -34,7 +42,7 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'course_name'    => 'required|string|max:255|unique:course,course_name',
+            'course_name'    => 'required|string|max:255|unique:courses,course_name',
             'process_ratio'  => 'required|numeric|min:0|max:100',
             'midterm_ratio'  => 'required|numeric|min:0|max:100',
             'final_ratio'    => 'required|numeric|min:0|max:100',
@@ -60,7 +68,7 @@ class CourseController extends Controller
         }
 
         $validatedData = $request->validate([
-            'course_name'    => 'string|max:255|unique:course,course_name,' . $id . ',course_id',
+            'course_name'    => 'string|max:255|unique:courses,course_name,' . $id . ',course_id',
             'process_ratio'  => 'numeric|min:0|max:100',
             'midterm_ratio'  => 'numeric|min:0|max:100',
             'final_ratio'    => 'numeric|min:0|max:100',
