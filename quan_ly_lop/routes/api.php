@@ -68,6 +68,8 @@ Route::prefix('students')->group(function () {
     Route::get('/getById/{id}', [StudentController::class, 'show']);
     Route::put('/update/{id}', [StudentController::class, 'update']);
     Route::delete('/delete/{id}', [StudentController::class, 'destroy']);
+    Route::post('/import-students', [StudentController::class, 'importStudents']);
+    Route::post('/getScoresStudentByStudentIdAndCoureId/{studentId}/{courseId}', [StudentController::class, 'getScoresStudentByStudentIdAndCoureId']);
 });
 
 // API cho Course
