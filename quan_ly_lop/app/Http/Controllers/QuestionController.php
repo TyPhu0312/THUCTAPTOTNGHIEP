@@ -8,13 +8,20 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\ListQuestionController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\Options;
 
 class QuestionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Question::paginate(10)); //phân trang 10 câu hỏi mỗi trang
+        $questions = Question::paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $questions
+        ]);
     }
+
 
     // Lấy thông tin chi tiết một câu hỏi
     public function show($id)

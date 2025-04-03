@@ -9,13 +9,10 @@ use Illuminate\Support\Str;
 
 class ExamController extends Controller
 {
-    // 🟢 Lấy tất cả bài thi (trả về mảng rỗng nếu không có dữ liệu)
     public function index()
     {
-        return response()->json(Exam::all());
+        return view('todopage');
     }
-
-    // 🟢 Lấy chi tiết bài thi theo ID
     public function show($id)
     {
         $exam = Exam::find($id);
@@ -24,8 +21,6 @@ class ExamController extends Controller
         }
         return response()->json($exam);
     }
-
-    // 🟢 Tạo bài thi mới
     public function store(Request $request)
     {
         $request->validate([

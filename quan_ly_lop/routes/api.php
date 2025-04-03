@@ -91,8 +91,7 @@ Route::prefix('lecturers')->group(function () {
 // API cho ListQuestion
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
-    Route::post('/createFromWeb', [ListQuestionController::class, 'storeFromWeb']);
-    Route::post('/create', [ListQuestionController::class, 'store']);
+    Route::post('/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
@@ -111,6 +110,7 @@ Route::prefix('options')->group(function () {
 Route::prefix('questions')->group(function () {
     Route::get('/', [QuestionController::class, 'index']);
     Route::post('/create', [QuestionController::class, 'store']);
+    Route::post('/batch', [QuestionController::class, 'storeBatch']);
     Route::get('/getById/{id}', [QuestionController::class, 'show']);
     Route::put('/update/{id}', [QuestionController::class, 'update']);
     Route::delete('/delete/{id}', [QuestionController::class, 'destroy']);
