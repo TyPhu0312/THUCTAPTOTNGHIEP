@@ -6,7 +6,7 @@ use App\Models\ListQuestion;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\Auth;
 class ListQuestionController extends Controller
 {
     // Lấy danh sách câu hỏi của một môn học cụ thể
@@ -14,17 +14,9 @@ class ListQuestionController extends Controller
     {
         $courses = Course::all();
         $listQuestions = ListQuestion::all();
-        if ($request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'courses' => $courses,
-                'list_questions' => $listQuestions
-            ]);
-        }
-
-        // Nếu không phải AJAX, trả về view
         return view('lecturerViews.question_bank', compact('courses', 'listQuestions'));
     }
+
 
 
     // Lấy thông tin chi tiết một danh sách câu hỏi
@@ -38,10 +30,54 @@ class ListQuestionController extends Controller
 
         return view('modules.mod_lecturer.mod_createQuestionBank', compact('listQuestion'));
     }
+    public function showListQuestionForLecturer($course_id, $lecturer_id)
+    {
+        try {
+            // Loại bỏ ký tự '\n' và các ký tự trắng (nếu có) từ lecturer_id
+            $lecturer_id = trim($lecturer_id);
 
+            // Eager load các quan hệ course, lecturer và questions trong một lần truy vấn
+            $listQuestions = ListQuestion::with(['course', 'lecturer', 'questions.options']) // Eager load mối quan hệ
+                ->where('lecturer_id', $lecturer_id)
+                ->where('course_id', $course_id)
+                ->first();
 
+            // Kiểm tra nếu không tìm thấy bản ghi
+            if (!$listQuestions) {
+                return response()->json(['message' => 'Không tìm thấy danh sách câu hỏi!'], 404);
+            }
 
-    // Tạo danh sách câu hỏi mới, nếu chưa tồn tại
+            // Định dạng dữ liệu câu hỏi
+            $formattedQuestions = $listQuestions->questions->map(function ($question) {
+                return [
+                    'question_id' => $question->question_id,
+                    'title' => $question->title,
+                    'content' => $question->content,
+                    'type' => $question->type,
+                    'correct_answer' => $question->correct_answer,
+                    'options' => $question->options->pluck('option_text')->toArray(), // Lấy các options
+                ];
+            });
+
+            return response()->json([
+                'data' => [
+                    'course_id' => $listQuestions->course_id,
+                    'course_name' => $listQuestions->course->course_name,
+                    'questions' => $formattedQuestions
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Trả về lỗi nếu có
+            return response()->json([
+                'error' => $e->getMessage(),
+                'details' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ], 500);
+        }
+    }
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -56,8 +92,12 @@ class ListQuestionController extends Controller
             // Tạo mới danh sách câu hỏi
             $validatedData = $request->validate([
                 'course_id' => 'required|string|exists:course,course_id',
+                'lecturer_id' => 'required|string|exists:lecturer,lecturer_id'
             ]);
-            $listQuestion = ListQuestion::create($validatedData);
+            $listQuestion = ListQuestion::create([
+                'course_id' => $validatedData['course_id'],
+                'lecturer_id' => $validatedData['lecturer_id'], // Lưu lecturer_id
+            ]);
 
             return response()->json([
                 'success' => true,

@@ -382,7 +382,9 @@
         const questionForm = document.querySelector('.card.shadow-lg');
         const temporaryQuestionsSection = document.getElementById('temporaryQuestionsSection');
         let optionCount = 1;
-
+        const courseId = 'bb18b2e3-b400-44f9-ae2a-d72853575eb3'; // Đặt course_id thực tế vào đây
+        const lecturerId = '13c21c5f-bb57-4e1f-9f65-a3bf69f4cc17'; // Đặt lecturer_id thực tế vào đây
+        fetchQuestions(courseId, lecturerId);
         // Kiểm tra xem đã có list_question_id chưa
         const existingListQuestionId = localStorage.getItem("list_question_id");
         if (existingListQuestionId) {
@@ -691,5 +693,63 @@
         console.log("Start button:", startButton);
         console.log("Save button:", saveQuestionButton);
         console.log("Finish button:", finishCreatingButton);
+        //API LẤY DỮ LIỆU MÔN HỌC CỦA GIẢNG VIÊN NHÓM THEO TỪNG MÔN
+        window.addEventListener('load', function () {
+            fetchQuestions();
+        });
+
+        //fetch bo cau hoi cua giao vien
+
+        function fetchQuestions(courseId, lecturerId) {
+            const questionSetsContainer = document.getElementById('questionSetsContainer');
+            if (!questionSetsContainer) {
+                console.error("Container for questions not found.");
+                return; // Nếu không tìm thấy phần tử, dừng hàm.
+            }
+
+            fetch(`/api/list-questions/${courseId}/${lecturerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    questionSetsContainer.innerHTML = ''; // Xóa các nội dung cũ trước khi thêm nội dung mới
+
+                    // Kiểm tra xem có danh sách khóa học và câu hỏi không
+                    if (data.courses && data.courses.length > 0) {
+                        // Duyệt qua danh sách các khóa học
+                        data.courses.forEach(course => {
+                            const courseName = course.course_name; // Lấy tên môn học
+                            const courseId = course.course_id; // Lấy course_id
+                            const questionSetHTML = `
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <h3>${courseName}</h3>
+                            <div class="row">
+                                ${data.list_questions.filter(listQuestion => listQuestion.course_id === courseId).map(listQuestion => `
+                                    <div class="col-12 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Bộ câu hỏi</h5>
+                                                <p class="card-text">Môn học: ${courseName}</p>
+                                                <p class="card-text">Giảng viên ID: ${listQuestion.lecturer_id}</p>
+                                                <p class="card-text">Ngày tạo: ${new Date(listQuestion.created_at).toLocaleString()}</p>
+                                                <a href="/questions/${listQuestion.question_id}" class="btn btn-primary">Xem Chi Tiết</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                            // Chèn HTML vào container
+                            questionSetsContainer.innerHTML += questionSetHTML;
+                        });
+                    } else {
+                        // Nếu không có khóa học, hiển thị thông báo
+                        questionSetsContainer.innerHTML = '<p>Chưa có khóa học nào.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching questions:', error);
+                    questionSetsContainer.innerHTML = '<p>Đã có lỗi xảy ra trong quá trình tải câu hỏi.</p>';
+                });
+        }
     });
 </script>

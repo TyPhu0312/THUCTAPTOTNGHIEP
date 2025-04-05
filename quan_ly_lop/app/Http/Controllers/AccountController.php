@@ -19,7 +19,7 @@ class AccountController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
@@ -41,4 +41,4 @@ class AccountController extends Controller
 
         return back()->with('success', 'Cập nhật thông tin thành công!');
     }
-} 
+}
