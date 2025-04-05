@@ -6,6 +6,8 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use App\Imports\StudentsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -36,11 +38,42 @@ class StudentController extends Controller
             'phone' => 'required|string|unique:student,phone',
         ]);
 
+        // Kiểm tra xem sinh viên đã tồn tại hay chưa
+        $existingStudent = Student::where('student_code', $validatedData['student_code'])->first();
+
+        if ($existingStudent) {
+            return response()->json(['message' => 'Mã sinh viên đã tồn tại!'], Response::HTTP_CONFLICT);
+        }
+
+        // Mã hóa mật khẩu trước khi lưu
         $validatedData['password'] = Hash::make($validatedData['password']);
 
+        // Tạo sinh viên mới
         $student = Student::create($validatedData);
 
         return response()->json($student, Response::HTTP_CREATED);
+    }
+
+    public function importStudents(Request $request)
+    {
+        // Kiểm tra có file gửi lên không
+        if (!$request->hasFile('file')) {
+            return response()->json(['message' => 'Vui lòng tải lên file Excel!'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Nhận file
+        $file = $request->file('file');
+
+        // Kiểm tra định dạng file
+        $allowedExtensions = ['xls', 'xlsx', 'csv'];
+        if (!in_array($file->getClientOriginalExtension(), $allowedExtensions)) {
+            return response()->json(['message' => 'File không hợp lệ!'], Response::HTTP_UNSUPPORTED_MEDIA_TYPE);
+        }
+
+        // Nhập dữ liệu từ file
+        Excel::import(new StudentsImport, $file);
+
+        return response()->json(['message' => 'Nhập dữ liệu thành công!'], Response::HTTP_OK);
     }
 
     // Cập nhật thông tin sinh viên
@@ -69,6 +102,8 @@ class StudentController extends Controller
 
         return response()->json($student);
     }
+
+
 
     // Xóa một sinh viên
     public function destroy($id)

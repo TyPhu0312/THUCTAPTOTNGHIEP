@@ -15,6 +15,7 @@ use App\Http\Controllers\ListQuestionController;
 use App\Http\Controllers\OptionsController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\SubmissionController;
 
 // Route công khai
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -68,6 +69,11 @@ Route::middleware('auth')->group(function () {
     // API quản lý bài tập
     Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
     Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
+
+    // Submission routes
+    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
+    Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 Route::get('/list-questions', [ListQuestionController::class, 'index']);

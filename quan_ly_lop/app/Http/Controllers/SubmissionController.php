@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Submission;
+use App\Models\Assignment;
+use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -10,19 +12,33 @@ use Illuminate\Support\Facades\Storage;
 class SubmissionController extends Controller
 {
     // Lấy tất cả bài nộp
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Submission::all());
+        $type = $request->query('type', 'assignment');
+        $id = $request->query('id');
+
+        if ($type === 'assignment') {
+            $item = Assignment::findOrFail($id);
+            $submissions = Submission::where('assignment_id', $id)
+                ->with('student')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $item = Exam::findOrFail($id);
+            $submissions = Submission::where('exam_id', $id)
+                ->with('student')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
+        return view('submissions.index', compact('submissions', 'item', 'type'));
     }
 
     // Lấy thông tin một bài nộp
-    public function show($id)
+    public function show(Submission $submission)
     {
-        $submission = Submission::find($id);
-        if (!$submission) {
-            return response()->json(['message' => 'Không tìm thấy bài nộp!'], Response::HTTP_NOT_FOUND);
-        }
-        return response()->json($submission);
+        $submission->load('student', 'answers');
+        return view('submissions.show', compact('submission'));
     }
 
     // Nộp bài
