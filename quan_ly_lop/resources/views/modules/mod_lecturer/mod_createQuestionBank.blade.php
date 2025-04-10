@@ -279,6 +279,50 @@
     ::-webkit-scrollbar-thumb:hover {
         background: #224abe;
     }
+
+    .card h5 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    .card p {
+        margin-bottom: 0.5rem;
+    }
+
+    .card .card-body {
+        padding: 1.25rem;
+    }
+
+    .card-hover::after {
+        content: '→';
+        /* hoặc dùng biểu tượng khác như '\2192' */
+        position: absolute;
+        bottom: -10px;
+        left: 90%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        font-size: 2.0rem;
+        color: #007bff;
+    }
+
+    .card-hover:hover::after {
+        opacity: 1;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        transition: 0.3s;
+        position: relative;
+        transition: box-shadow 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
+
+    .card-text strong {
+        color: #495057;
+    }
 </style>
 
 <div class="container py-4">
@@ -371,6 +415,22 @@
             @endauth
         </div>
     </div>
+
+    <div class="container ">
+        <div class="flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-4">Danh sách bộ câu hỏi của bạn</h3>
+            <select name="course_id" id="courseFilter" class="form-select">
+                <option value="all" selected>-- Tất cả môn học --</option>
+                @foreach($courses as $course)
+                    <option value="{{ $course->course_id }}">{{ $course->course_name }}</option>
+                @endforeach
+            </select>
+
+        </div>
+        <div id="list-question-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 cursor-pointer">
+            <!-- Cards sẽ được render ở đây -->
+        </div>
+    </div>
 </div>
 
 <script>
@@ -382,31 +442,64 @@
         const questionForm = document.querySelector('.card.shadow-lg');
         const temporaryQuestionsSection = document.getElementById('temporaryQuestionsSection');
         let optionCount = 1;
-
+        const courseId = 'bb18b2e3-b400-44f9-ae2a-d72853575eb3';
+        const lecturerId = '13c21c5f-bb57-4e1f-9f65-a3bf69f4cc17';
+        const filterSelect = document.getElementById('courseFilter');
+        const courseSelect = document.getElementById("courseFilter");
+        const container = document.getElementById("list-question-container");
         // Kiểm tra xem đã có list_question_id chưa
         const existingListQuestionId = localStorage.getItem("list_question_id");
+
         if (existingListQuestionId) {
             questionForm.style.display = 'block';
             temporaryQuestionsSection.style.display = 'block';
             renderTemporaryQuestions();
         }
+        function fetchListQuestions(courseId = "null") {
+            fetch(`/api/list-questions/getAllQuestion/${courseId}/${lecturerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById("list-question-container");
+                    container.innerHTML = ""; // Xoá dữ liệu cũ
 
-        // Lấy CSRF token - sửa lỗi null
-        let csrfToken = '';
-        const csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
-        if (csrfMetaTag) {
-            csrfToken = csrfMetaTag.getAttribute('content');
-        } else {
-            // Nếu không tìm thấy meta tag, thử lấy từ input hidden
-            const csrfInput = document.querySelector('input[name="_token"]');
-            if (csrfInput) {
-                csrfToken = csrfInput.value;
-            } else {
-                console.error("Không tìm thấy CSRF token!");
-            }
+                    if (data.length === 0) {
+                        container.innerHTML = `<p class="text-muted">Chưa có bộ câu hỏi nào cho môn học này.</p>`;
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const card = document.createElement("div");
+                        card.className = "col";
+                        const lecturerName = item.lecturer?.fullname || "Không rõ";
+                        const courseName = item.course?.course_name || "Không rõ";
+                        card.innerHTML = `
+                    <div class="card h-100 shadow-sm card-hover position-relative">
+                        <div class="card-body">
+                            <p class="card-text"><strong>Môn học:</strong> ${courseName}</p>
+                            <p class="card-text"><strong>Giảng viên:</strong> ${lecturerName}</p>
+                            <p class="card-text"><small class="text-muted">Tạo lúc: ${new Date(item.created_at).toLocaleString()}</small></p>
+                        </div>
+                        <div class="arrow-icon">→</div>
+                    </div>
+                `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy danh sách câu hỏi:", error);
+                    document.getElementById("list-question-container").innerHTML =
+                        `<p class="text-danger">Không thể tải dữ liệu. Vui lòng thử lại sau.</p>`;
+                });
         }
-        console.log("CSRF Token:", csrfToken);
-
+        //lọc card
+        courseSelect.addEventListener("change", function () {
+            const selectedValue = this.value;
+            const courseId = selectedValue === "all" ? "null" : selectedValue;
+            fetchListQuestions(courseId);
+        });
+        window.addEventListener("DOMContentLoaded", () => {
+            fetchListQuestions(); // load tất cả môn học khi chưa chọn gì
+        });
         // Hiển thị câu hỏi đã lưu từ localStorage
         function renderTemporaryQuestions() {
             const savedQuestions = JSON.parse(localStorage.getItem('questions')) || [];
@@ -512,7 +605,8 @@
                 startButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
 
                 console.log("Calling API endpoint: /api/list-questions");
-                console.log("Request body:", { course_id: courseId });
+                console.log("Request body:", { course_id: courseId, lecturer_id: lecturerId });
+
                 console.log("CSRF Token:", csrfToken);
 
                 fetch("/api/list-questions/create", {
@@ -521,7 +615,7 @@
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": csrfToken
                     },
-                    body: JSON.stringify({ course_id: courseId })
+                    body: JSON.stringify({ course_id: courseId, lecturer_id: lecturerId })
                 })
                     .then(response => {
                         console.log("Response status:", response.status);
@@ -686,10 +780,9 @@
         } else {
             console.error("Finish button not found"); // Kiểm tra nếu không tìm thấy nút
         }
-
-        // Kiểm tra xem các nút có tồn tại không
         console.log("Start button:", startButton);
         console.log("Save button:", saveQuestionButton);
         console.log("Finish button:", finishCreatingButton);
     });
+
 </script>
