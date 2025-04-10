@@ -51,10 +51,13 @@ class ClassroomController extends Controller
             })
             ->where('student_class.student_id', $student->student_id) // Sử dụng student_id của đối tượng sinh viên
             ->select(
+                'classroom.class_id',
                 'classroom.class_code',
                 'classroom.class_description',
                 'classroom.class_duration',
                 'course.course_name',
+                'course.course_id',
+                'lecturer.lecturer_id',
                 'lecturer.fullname as lecturer_name',
                 'lecturer.school_email',
                 'lecturer.phone',

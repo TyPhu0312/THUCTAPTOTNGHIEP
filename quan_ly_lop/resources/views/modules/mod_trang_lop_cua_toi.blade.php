@@ -97,6 +97,7 @@
         .then(data => {
             statistical(data);
             renderClasses(data);
+
              // Gắn lại dữ liệu để lọc
              window.allClasses = data;
         })
@@ -157,7 +158,6 @@
                 container.innerHTML = '<p class="text-muted">Không có lớp.</p>';
                 return;
             }
-
             let activeClasses = 0;
             let completedClasses = 0;
             let totalHours = 0;
@@ -263,9 +263,12 @@
 
                                 ${classItem.status !== 'Drop' ? `
                                         <div class="mt-3">
-                                            <a href="#" class="btn btn-primary w-100">
+                                            <button class="btn btn-primary w-100 join-button"
+                                                data-course-id="${classItem.course_id}"
+                                                data-lecturer-id="${classItem.lecturer_id}"
+                                                data-class-id="${classItem.class_id}">
                                                 <i class="fas fa-sign-in-alt me-2"></i>Tham gia
-                                            </a>
+                                            </button>
                                         </div>
                                     ` : ''}
                             </div>
@@ -275,7 +278,29 @@
             });
 
             container.innerHTML = html;
+            attachJoinHandlers();
     }
+    function attachJoinHandlers() {
+        const joinButtons = document.querySelectorAll('.join-button');
+        joinButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const courseId = this.getAttribute('data-course-id');
+                const lecturerId = this.getAttribute('data-lecturer-id');
+                const classId = this.getAttribute('data-class-id');
+
+                const listId = {
+                    course_id: courseId,
+                    lecturer_id: lecturerId,
+                    class_id: classId
+                };
+
+                localStorage.setItem("list_id_course_lecturer", JSON.stringify(listId));
+
+                // Tuỳ chọn: điều hướng sang trang 
+                window.location.href = "/classDetail";
+            });
+    });
+}
 
 </script>
 <style>
