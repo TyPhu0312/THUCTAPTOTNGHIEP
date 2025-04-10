@@ -18,7 +18,6 @@ class StudentClass extends Model
         'student_class_id',
         'student_id',//Khoá phụ
         'class_id',// khoá phụ
-        'enrolled_at',
         'status',
         'final_score',
     ];

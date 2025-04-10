@@ -70,5 +70,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+    Route::get('/show', function () {
+        return view('show_class'); // Tạo view student-classes.blade.php
+    });
+    Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 });
-Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+

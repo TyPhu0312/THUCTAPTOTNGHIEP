@@ -161,6 +161,7 @@ Route::prefix('classrooms')->group(function () {
     Route::get('/getById/{id}', [ClassroomController::class, 'show']);
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
+    Route::get('/student-classes/{student_code}', [ClassroomController::class, 'getStudentClasses']);
 });
 // Nhóm routes cho sinh viên
 Route::prefix('student')->group(function () {

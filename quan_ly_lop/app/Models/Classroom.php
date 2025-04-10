@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class Classroom extends Model
 {
     use HasFactory;
-    protected $table = 'class';
+    protected $table = 'classroom';
     protected $primaryKey = 'class_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -23,7 +23,7 @@ class Classroom extends Model
         'class_duration',
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected static function boot()
     {
@@ -52,9 +52,5 @@ class Classroom extends Model
     public function lecturer()
     {
         return $this->belongsTo(Lecturer::class, 'lecturer_id');
-    }
-    public function studentClasses()
-    {
-        return $this->hasMany(StudentClass::class, 'class_id'); 
     }
 }

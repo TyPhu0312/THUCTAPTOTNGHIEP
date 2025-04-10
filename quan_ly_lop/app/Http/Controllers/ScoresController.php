@@ -42,7 +42,7 @@ class ScoresController extends Controller
       public function getScoresStudentByStudentIdAndCoureId($studentId, $courseId)
       {
           $score = Score::where('student_id', $studentId)
-                    ->where('coure_id',$courseId)
+                    ->where('course_id',$courseId)
                     ->get();
           if (!$score) {
               return response()->json(['erro' => 'Không tìm thấy điểm số!'], 404);
