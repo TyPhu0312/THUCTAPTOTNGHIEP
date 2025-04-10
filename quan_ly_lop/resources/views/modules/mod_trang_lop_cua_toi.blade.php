@@ -30,51 +30,8 @@
         </div>
 
         <!-- Thống kê -->
-        <div class="stats-row row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon bg-primary-soft">
-                        <i class="fas fa-book-open text-primary"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>{{ count($classes) }}</h3>
-                        <p>Lớp đang học</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon bg-success-soft">
-                        <i class="fas fa-graduation-cap text-success"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>2</h3>
-                        <p>Đã hoàn thành</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon bg-info-soft">
-                        <i class="fas fa-clock text-info"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>30</h3>
-                        <p>Giờ học</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-icon bg-warning-soft">
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>8.5</h3>
-                        <p>Điểm TB</p>
-                    </div>
-                </div>
-            </div>
+        <div class="stats-row row g-4 mb-4" id="statistical">
+
         </div>
 
         <!-- Thanh tìm kiếm và lọc -->
@@ -84,95 +41,243 @@
                     <div class="col-md-6">
                         <div class="search-box">
                             <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="form-control search-input" placeholder="Tìm kiếm lớp học...">
+                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Tìm kiếm lớp học...">
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select custom-select">
-                            <option selected>Trạng thái</option>
-                            <option>Đang học</option>
-                            <option>Đã hoàn thành</option>
-                            <option>Tất cả</option>
+                        <select id="statusSelect" class="form-select custom-select">
+                            <option value="">Trạng thái</option>
+                            <option value="Đang học">Đang học</option>
+                            <option value="Đã hoàn thành">Đã hoàn thành</option>
+                            <option value="Tất cả">Tất cả</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select custom-select">
-                            <option selected>Sắp xếp theo</option>
-                            <option>Mới nhất</option>
-                            <option>Cũ nhất</option>
-                            <option>Tên A-Z</option>
+                        <select id="sortSelect" class="form-select custom-select">
+                            <option value="">Sắp xếp theo</option>
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="name_asc">Tên A-Z</option>
+                            <option value="name_desc">Tên Z-A</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
 
+
         <!-- Danh sách lớp -->
         <div class="classes-section">
             <h4 class="section-title mb-4">Lớp của tôi</h4>
-            <div class="row g-4">
-                @foreach($classes as $class)
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="class-card">
-                            <div class="class-card-header">
-                                <img src="{{ $class['image'] }}" alt="{{ $class['title'] }}" class="class-image">
-                                <span class="status-badge {{ $class['status'] == 'Đang học' ? 'badge-success' : 'badge-secondary' }}">
-                                    {{ $class['status'] }}
-                                </span>
-                            </div>
-                            <div class="class-card-body">
-                                <h5 class="class-title">{{ $class['title'] }}</h5>
-                                <p class="class-description">{{ $class['description'] }}</p>
+            <div class="row g-4" id="dynamic-classes">
 
-                                <div class="class-info">
-                                    <div class="info-item">
-                                        <i class="fas fa-chalkboard-teacher"></i>
-                                        <span>{{ $class['author'] }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="fas fa-calendar"></i>
-                                        <span>{{ $class['date'] }}</span>
-                                    </div>
-                                </div>
-
-                                @if(isset($class['progress']))
-                                    <div class="progress-section">
-                                        <div class="progress">
-                                            <div class="progress-bar" style="width: {{ $class['progress'] }}%"></div>
-                                        </div>
-                                        <span class="progress-text">{{ $class['progress'] }}% hoàn thành</span>
-                                    </div>
-                                @endif
-
-                                @if(isset($class['final_score']))
-                                    <div class="score-section">
-                                        <div class="score-badge">
-                                            <span class="score-label">Điểm số:</span>
-                                            <span class="score-value">{{ $class['final_score'] }}/10</span>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="class-actions">
-                                    @if($class['status'] == 'Đang học')
-                                        <a href="#" class="btn btn-primary btn-enter">
-                                            <i class="fas fa-door-open me-2"></i>Vào học
-                                        </a>
-                                    @else
-                                        <a href="#" class="btn btn-secondary btn-review">
-                                            <i class="fas fa-history me-2"></i>Xem lại
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
             </div>
         </div>
     @endauth
 </div>
+<meta name="student_id" content="{{ Auth::user()->student_id }}">
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const studentId = document.querySelector('meta[name="student_id"]').getAttribute('content');
+        const token = localStorage.getItem('token');
+
+        fetch(`/api/classrooms/student-classes/${studentId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi khi gọi API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            statistical(data);
+            renderClasses(data);
+             // Gắn lại dữ liệu để lọc
+             window.allClasses = data;
+        })
+        .catch(error => {
+            console.error(error);
+            document.getElementById('dynamic-classes').innerHTML =
+                '<p class="text-danger">Lỗi khi tải lớp học.</p>';
+            document.getElementById('statistical').innerHTML =
+            '<p class="text-danger">Lỗi khi tải thông tin.</p>';
+        });
+    });
+    const searchInput = document.getElementById('searchInput');
+    const statusSelect = document.getElementById('statusSelect');
+    const sortSelect = document.getElementById('sortSelect');
+
+    searchInput.addEventListener('input', applyFilters);
+    statusSelect.addEventListener('change', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
+    function applyFilters() {
+            const searchValue = searchInput.value.toLowerCase().trim();
+            const statusValue = statusSelect.value;
+            const sortValue = sortSelect.value;
+
+            let filteredData = window.allClasses || [];
+
+            // Tìm kiếm theo tên lớp
+            if (searchValue) {
+                filteredData = filteredData.filter(item =>
+                    item.course_name && item.course_name.toLowerCase().includes(searchValue)
+                );
+            }
+
+            // Lọc theo trạng thái
+            if (statusValue && statusValue !== 'Tất cả') {
+                filteredData = filteredData.filter(item =>
+                    item.status === statusValue || item.status === (statusValue === 'Đang học' ? 'Active' : 'Drop')
+                );
+            }
+
+            // Sắp xếp
+            filteredData.sort((a, b) => {
+                if (sortValue === 'newest') {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                } else if (sortValue === 'oldest') {
+                    return new Date(a.created_at) - new Date(b.created_at);
+                } else if (sortValue === 'name_asc') {
+                    return a.course_name.localeCompare(b.course_name);
+                } else if (sortValue === 'name_desc') {
+                    return b.course_name.localeCompare(a.course_name);
+                }
+                return 0;
+            });
+
+            renderClasses(filteredData);
+        }
+    function statistical(data){
+        if (data.length === 0) {
+                container.innerHTML = '<p class="text-muted">Không có lớp.</p>';
+                return;
+            }
+
+            let activeClasses = 0;
+            let completedClasses = 0;
+            let totalHours = 0;
+
+            data.forEach(classItem => {
+                if (classItem.status === 'Active' || classItem.status === 'Đang diễn ra') {
+                    activeClasses++;
+                } else if (classItem.status === 'Drop') {
+                    completedClasses++;
+                }
+
+                totalHours += parseFloat(classItem.class_duration || 0);
+            });
+
+            const statisticalHTML = `
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary-soft">
+                            <i class="fas fa-book-open text-primary"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>${activeClasses}</h3>
+                            <p>Lớp đang học</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success-soft">
+                            <i class="fas fa-graduation-cap text-success"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>${completedClasses}</h3>
+                            <p>Đã hoàn thành</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info-soft">
+                            <i class="fas fa-clock text-info"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>${totalHours}</h3>
+                            <p>Giờ học</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('statistical').innerHTML = statisticalHTML;
+    }
+    function renderClasses(data) {
+        const container = document.getElementById('dynamic-classes');
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-muted">Không có lớp học nào.</p>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(classItem => {
+                html += `
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="class-card card h-100">
+                            <div class="class-card-header">
+                                <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course_name}">
+                                <div class="card-img-overlay">
+                                    <span class="badge status-badge
+                                        ${classItem.status === 'Đang diễn ra' || classItem.status === 'Active' ? 'bg-success' :
+                                        classItem.status === 'Drop' ? 'bg-secondary' : 'bg-warning'}">
+                                        ${classItem.status || 'Không rõ'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <p class="card-author mb-0">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>${classItem.lecturer_name || 'Không rõ'}
+                                    </p>
+                                </div>
+                                <h5 class="card-title">${classItem.course_name || 'Tên lớp'}</h5>
+                                <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
+
+                                <div class="class-info">
+                                    <div class="info-item">
+                                        <i class="fas fa-users me-2"></i>
+                                        <span>${classItem.total_students || 0}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        <span>${classItem.class_duration || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                ${classItem.course_score != null ? `
+                                    <div class="mt-2">
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-star me-1"></i> Điểm: ${classItem.course_score}/10
+                                        </span>
+                                    </div>
+                                ` : ''}
+
+                                ${classItem.status !== 'Drop' ? `
+                                        <div class="mt-3">
+                                            <a href="#" class="btn btn-primary w-100">
+                                                <i class="fas fa-sign-in-alt me-2"></i>Tham gia
+                                            </a>
+                                        </div>
+                                    ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+    }
+
+</script>
 <style>
 /* Profile Header */
 .profile-header {
