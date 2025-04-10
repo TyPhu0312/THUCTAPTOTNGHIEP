@@ -1,6 +1,5 @@
-@extends('layouts.app')
-
-@section('content')
+@extends('templates.template_normal')
+@section('main-content')
 <div class="container py-4">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -48,7 +47,7 @@
                     <form action="{{ route('account.update') }}" method="POST">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="row mb-3">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Họ và tên</h6>
@@ -147,4 +146,4 @@
     border-color: #e9ecef;
 }
 </style>
-@endsection 
+@endsection

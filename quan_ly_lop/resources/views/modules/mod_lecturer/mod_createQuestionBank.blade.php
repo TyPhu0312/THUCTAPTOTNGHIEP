@@ -323,8 +323,19 @@
     .card-text strong {
         color: #495057;
     }
-</style>
 
+    #courseFilter {
+        width: 250px;
+        border-color: #343a40;
+    }
+    #courseSelect {
+        width: fit-content;
+        border-color: #343a40;
+    }
+    #startCreateQuestion {
+        width: 250px;
+    }
+</style>
 <div class="container py-4">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -333,20 +344,23 @@
         </div>
     @endif
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-start">
         <div class="col-md-10">
             @auth
                 <form id="courseForm" action="/api/questions/create" method="POST">
                     @csrf
-                    <select name="course_id" id="courseSelect" class="form-select">
-                        <option selected disabled>-- Chọn môn học --</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->course_id }}">{{ $course->course_name }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" id="startCreateQuestion" class="btn btn-primary w-100 mt-3">
-                        Bắt đầu tạo bộ câu hỏi
-                    </button>
+                    <div class="d-flex flex-column container-sm">
+                        <select name="course_id_createQuestion" id="courseSelect" class="form-select">
+                            <option selected disabled>Bắt đầu tạo bộ câu hỏi với môn học</option>
+                            @foreach($courses as $course)
+                                <option value="{{ $course->course_id }}">{{ $course->course_name }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" id="startCreateQuestion" class="btn btn-primary mt-3 " disabled>
+                            Bắt đầu tạo bộ câu hỏi
+                        </button>
+                    </div>
+
                 </form>
 
                 <div id="temporaryQuestionsSection" class="mb-4" style="display: none;">
@@ -416,25 +430,26 @@
         </div>
     </div>
 
-    <div class="container ">
+    <div class="container mt-3">
         <div class="flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-4">Danh sách bộ câu hỏi của bạn</h3>
+            <h3 class="mb-4 ">Danh sách câu hỏi</h3>
             <select name="course_id" id="courseFilter" class="form-select">
-                <option value="all" selected>-- Tất cả môn học --</option>
+                <option value="all" selected>Tất cả</option>
                 @foreach($courses as $course)
                     <option value="{{ $course->course_id }}">{{ $course->course_name }}</option>
                 @endforeach
             </select>
-
         </div>
         <div id="list-question-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 cursor-pointer">
             <!-- Cards sẽ được render ở đây -->
         </div>
     </div>
 </div>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const startButton = document.getElementById("startCreateQuestion");
         const temporaryQuestionsList = document.getElementById("temporaryQuestionsList");
         const saveQuestionButton = document.getElementById("saveQuestion");
@@ -446,10 +461,12 @@
         const lecturerId = '13c21c5f-bb57-4e1f-9f65-a3bf69f4cc17';
         const filterSelect = document.getElementById('courseFilter');
         const courseSelect = document.getElementById("courseFilter");
+        const courseToCreateQuestion = document.getElementById("courseSelect");
+        const courseFilter = document.getElementById("courseFilter");
         const container = document.getElementById("list-question-container");
         // Kiểm tra xem đã có list_question_id chưa
         const existingListQuestionId = localStorage.getItem("list_question_id");
-
+        const submitBtn = document.getElementById("startCreateQuestion");
         if (existingListQuestionId) {
             questionForm.style.display = 'block';
             temporaryQuestionsSection.style.display = 'block';
@@ -491,11 +508,18 @@
                         `<p class="text-danger">Không thể tải dữ liệu. Vui lòng thử lại sau.</p>`;
                 });
         }
-        //lọc card
-        courseSelect.addEventListener("change", function () {
+        courseFilter.addEventListener("change", function () {
             const selectedValue = this.value;
             const courseId = selectedValue === "all" ? "null" : selectedValue;
-            fetchListQuestions(courseId);
+            fetchListQuestions(courseId); // chỉ fetch danh sách
+        });
+        //lọc card
+        courseToCreateQuestion.addEventListener("change", function () {
+            if (this.value) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
         });
         window.addEventListener("DOMContentLoaded", () => {
             fetchListQuestions(); // load tất cả môn học khi chưa chọn gì
