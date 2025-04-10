@@ -21,7 +21,7 @@ class StudentClass extends Model
         'status',
         'final_score',
     ];
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected static function boot()
     {
