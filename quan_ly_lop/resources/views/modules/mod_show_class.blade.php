@@ -81,7 +81,7 @@ function getLecturerInfo(lecturerId) {
         })
         .then(lecturer => {
             lecturerInfoDiv.innerHTML = `
-                <p><strong>Họ tên:</strong> ${lecturer.fullname || 'Không có dữ liệu'}</p>
+                <p><strong>Tên giáo viên:</strong> ${lecturer.fullname || 'Không có dữ liệu'}</p>
                 <p><strong>Email:</strong> ${lecturer.school_email || 'Không có dữ liệu'}</p>
                 <p><strong>Email cá nhân:</strong> ${lecturer.personal_email || 'Không có dữ liệu'}</p>
                 <p><strong>Số điện thoại:</strong> ${lecturer.phone || 'Không có dữ liệu'}</p>
