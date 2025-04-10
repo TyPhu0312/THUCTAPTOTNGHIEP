@@ -42,7 +42,7 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'course_name'    => 'required|string|max:255|unique:courses,course_name',
+            'course_name'    => 'required|string|max:255|unique:course,course_name',
             'process_ratio'  => 'required|numeric|min:0|max:100',
             'midterm_ratio'  => 'required|numeric|min:0|max:100',
             'final_ratio'    => 'required|numeric|min:0|max:100',
