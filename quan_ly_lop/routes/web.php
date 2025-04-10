@@ -76,9 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
     Route::get('/classDetail', function () {
         return view('show_class'); // Tạo view student-classes.blade.php
-
+    });
     Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
-
 });
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
 
