@@ -1,6 +1,5 @@
-@extends('layouts.app')
-
-@section('content')
+@extends('templates.template_normal')
+@section('main-content')
 <div class="container py-4">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -296,7 +295,7 @@
 
                 localStorage.setItem("list_id_course_lecturer", JSON.stringify(listId));
 
-                // Tuỳ chọn: điều hướng sang trang 
+                // Tuỳ chọn: điều hướng sang trang
                 window.location.href = "/classDetail";
             });
     });

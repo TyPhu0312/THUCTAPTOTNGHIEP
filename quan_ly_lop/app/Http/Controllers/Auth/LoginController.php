@@ -27,7 +27,7 @@ class LoginController extends Controller
             // Tìm người dùng theo email
             $student = Student::where('school_email', $request->school_email)->first();
             $lecturer = Lecturer::where('school_email', $request->school_email)->first();
-            
+
             if (!$student && !$lecturer) {
                 return back()
                     ->withInput($request->except('password'))
@@ -71,6 +71,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login')->with('success', 'Đăng xuất thành công.');
     }
 }
