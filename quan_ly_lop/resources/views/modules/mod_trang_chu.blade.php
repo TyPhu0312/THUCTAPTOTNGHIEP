@@ -1,5 +1,5 @@
 @extends('templates.template_normal')
-@section('content')
+@section('main-content')
     <div class="container py-4">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -56,12 +56,29 @@
                 <div class="row justify-content-start" id="dynamic-classes">
                 </div>
             </div>
-
+        @else
+            <!-- Trang chào mừng cho khách -->
+            <div class="welcome-container text-center py-5">
+                <div class="welcome-icon mb-4">
+                    <i class="fas fa-graduation-cap fa-4x text-primary"></i>
+                </div>
+                <h2 class="welcome-title mb-3">Chào mừng đến với hệ thống quản lý lớp học</h2>
+                <p class="welcome-text mb-4">Đăng nhập để trải nghiệm đầy đủ các tính năng của hệ thống.</p>
+                <div class="welcome-buttons">
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                    </a>
+<!--                     <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Đăng ký
+                    </a> -->
+                </div>
+            </div>
         @endauth
     </div>
     @auth
         <meta name="student_id" content="{{ Auth::user()->student_id }}">
     @endauth
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const studentId = document.querySelector('meta[name="student_id"]').getAttribute('content');
@@ -100,60 +117,60 @@
             let html = '';
             data.forEach(classItem => {
                 html += `
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div class="class-card card h-100">
-                            <div class="class-card-header">
-                                <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course_name}">
-                                <div class="card-img-overlay">
-                                    <span class="badge status-badge
-                                        ${classItem.status === 'Đang diễn ra' || classItem.status === 'Active' ? 'bg-success' :
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="class-card card h-100">
+                                        <div class="class-card-header">
+                                            <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course_name}">
+                                            <div class="card-img-overlay">
+                                                <span class="badge status-badge
+                                                    ${classItem.status === 'Đang diễn ra' || classItem.status === 'Active' ? 'bg-success' :
                         classItem.status === 'Drop' ? 'bg-secondary' : 'bg-warning'}">
-                                        ${classItem.status || 'Không rõ'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <p class="card-author mb-0">
-                                        <i class="fas fa-chalkboard-teacher me-2"></i>${classItem.lecturer_name || 'Không rõ'}
-                                    </p>
-                                </div>
-                                <h5 class="card-title">${classItem.course_name || 'Tên lớp'}</h5>
-                                <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
-
-                                <div class="class-info">
-                                    <div class="info-item">
-                                        <i class="fas fa-users me-2"></i>
-                                        <span>${classItem.total_students || 0}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="fas fa-calendar-alt me-2"></i>
-                                        <span>${classItem.class_duration || 'N/A'}</span>
-                                    </div>
-                                </div>
-                                ${classItem.course_score != null ? `
-                                    <div class="mt-2">
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-star me-1"></i> Điểm: ${classItem.course_score}/10
-                                        </span>
-                                    </div>
-                                ` : ''}
-
-                                ${classItem.status !== 'Drop' ? `
-                                            <div class="mt-3">
-                                                <button class="btn btn-primary w-100 join-button"
-                                                    data-course-id="${classItem.course_id}"
-                                                    data-lecturer-id="${classItem.lecturer_id}"
-                                                    data-class-id="${classItem.class_id}">
-                                                    <i class="fas fa-sign-in-alt me-2"></i>Tham gia
-                                                </button>
+                                                    ${classItem.status || 'Không rõ'}
+                                                </span>
                                             </div>
-                                        ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <p class="card-author mb-0">
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>${classItem.lecturer_name || 'Không rõ'}
+                                                </p>
+                                            </div>
+                                            <h5 class="card-title">${classItem.course_name || 'Tên lớp'}</h5>
+                                            <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
+
+                                            <div class="class-info">
+                                                <div class="info-item">
+                                                    <i class="fas fa-users me-2"></i>
+                                                    <span>${classItem.total_students || 0}</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-calendar-alt me-2"></i>
+                                                    <span>${classItem.class_duration || 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                            ${classItem.course_score != null ? `
+                                                <div class="mt-2">
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-star me-1"></i> Điểm: ${classItem.course_score}/10
+                                                    </span>
+                                                </div>
+                                            ` : ''}
+
+                                            ${classItem.status !== 'Drop' ? `
+                                                        <div class="mt-3">
+                                                            <button class="btn btn-primary w-100 join-button"
+                                                                data-course-id="${classItem.course_id}"
+                                                                data-lecturer-id="${classItem.lecturer_id}"
+                                                                data-class-id="${classItem.class_id}">
+                                                                <i class="fas fa-sign-in-alt me-2"></i>Tham gia
+                                                            </button>
+                                                        </div>
+                                                    ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
             });
 
             container.innerHTML = html;
