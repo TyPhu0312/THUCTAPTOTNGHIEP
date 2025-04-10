@@ -80,6 +80,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 });
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
-});
+
 
 
