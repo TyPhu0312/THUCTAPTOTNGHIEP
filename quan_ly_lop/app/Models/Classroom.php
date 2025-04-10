@@ -53,8 +53,5 @@ class Classroom extends Model
     {
         return $this->belongsTo(Lecturer::class, 'lecturer_id');
     }
-    public function studentClasses()
-    {
-        return $this->hasMany(StudentClass::class, 'class_id'); 
-    }
+
 }

@@ -254,4 +254,83 @@ class StudentAssignmentController extends Controller
 
         return response()->json($questions);
     }
+    // Lấy danh sách tất cả submission của sinh viên theo assignment/exam
+    public function listSubmissions(Request $request)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|uuid|exists:students,id',
+            'type' => 'required|in:assignment,exam',
+            'target_id' => 'required|uuid', // assignment_id hoặc exam_id
+        ]);
+
+        $query = Submission::query()
+            ->where('student_id', $validated['student_id']);
+
+        if ($validated['type'] === 'assignment') {
+            $query->where('assignment_id', $validated['target_id']);
+        } else {
+            $query->where('exam_id', $validated['target_id']);
+        }
+
+        return response()->json($query->with(['student'])->get());
+    }
+
+    // Tạo mới submission
+    public function storeSubmission(Request $request)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|uuid|exists:students,id',
+            'assignment_id' => 'nullable|uuid|exists:assignments,id',
+            'exam_id' => 'nullable|uuid|exists:exams,id',
+            'file_path' => 'nullable|string',
+            'status' => 'nullable|in:submitted,draft,late',
+        ]);
+
+        // Bắt buộc phải có 1 trong 2: assignment_id hoặc exam_id
+        if (!$validated['assignment_id'] && !$validated['exam_id']) {
+            return response()->json(['error' => 'assignment_id hoặc exam_id là bắt buộc'], 422);
+        }
+
+        $submission = Submission::create([
+            'id' => Str::uuid(),
+            'student_id' => $validated['student_id'],
+            'assignment_id' => $validated['assignment_id'] ?? null,
+            'exam_id' => $validated['exam_id'] ?? null,
+            'file_path' => $validated['file_path'] ?? null,
+            'status' => $validated['status'] ?? 'submitted',
+        ]);
+
+        return response()->json($submission, 201);
+    }
+
+    // Xem chi tiết submission
+    public function showSubmission($id)
+    {
+        $submission = Submission::with(['student', 'assignment', 'exam'])->findOrFail($id);
+        return response()->json($submission);
+    }
+
+    // Cập nhật submission
+    public function updateSubmission(Request $request, $id)
+    {
+        $submission = Submission::findOrFail($id);
+
+        $validated = $request->validate([
+            'file_path' => 'nullable|string',
+            'status' => 'nullable|in:submitted,draft,late',
+        ]);
+
+        $submission->update($validated);
+
+        return response()->json($submission);
+    }
+
+    // Xoá submission
+    public function deleteSubmission($id)
+    {
+        $submission = Submission::findOrFail($id);
+        $submission->delete();
+
+        return response()->json(['message' => 'Xoá thành công']);
+    }
 }
