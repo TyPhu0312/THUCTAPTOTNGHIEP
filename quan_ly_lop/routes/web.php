@@ -45,19 +45,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
     Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
 
-
     // API tạo và quản lý danh sách câu hỏi
     Route::post('/list-questions/create', [ListQuestionController::class, 'storeFromWeb']);
+    Route::get('/list-questions/{course_id}/{lecturer_id}', [ListQuestionController::class, 'showListQuestionForLecturer']);
     Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
     Route::get('/list-questions', [ListQuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
+    Route::get('/list-questions/getAllQuestion', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
+    Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
     // API tạo và quản lý câu hỏi
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
+
     // API quản lý lựa chọn (options)
     Route::get('/questions/{questionId}/options', [OptionsController::class, 'index']);
     Route::post('/questions/{questionId}/options', [OptionsController::class, 'store']);
     Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+
     // API quản lý bài thi
     Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
     Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
@@ -72,7 +76,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
     Route::get('/classDetail', function () {
         return view('show_class'); // Tạo view student-classes.blade.php
-    });
-    Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+
 });
+Route::get('/list-questions', [ListQuestionController::class, 'index']);
+
+
 
