@@ -133,7 +133,9 @@
             </div>
         </div>
     </div>
-
+    <script>
+        
+    </script>
     <style>
         /* Card styles */
         .class-card {

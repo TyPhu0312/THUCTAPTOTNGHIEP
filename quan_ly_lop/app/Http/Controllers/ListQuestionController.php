@@ -16,7 +16,35 @@ class ListQuestionController extends Controller
         $listQuestions = ListQuestion::all();
         return view('lecturerViews.question_bank', compact('courses', 'listQuestions'));
     }
+    public function getAllListQuestionsWithLecturer($course_id, $lecturer_id)
+    {
+        try {
+            $query = ListQuestion::with([
+                'lecturer' => function ($query) {
+                    $query->select('lecturer_id', 'fullname');
+                },
+                'course' => function ($query) {
+                    $query->select('course_id', 'course_name');
+                }
+            ])->where('lecturer_id', $lecturer_id);
 
+            // Nếu có course_id thì mới filter thêm
+            if ($course_id !== 'null' && $course_id !== '' && $course_id !== null) {
+                $query->where('course_id', $course_id);
+            }
+
+            $listQuestions = $query->orderByDesc('created_at')->get();
+
+            return response()->json($listQuestions);
+        } catch (\Exception $e) {
+            \Log::error('Lỗi lấy danh sách bộ câu hỏi: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Đã xảy ra lỗi khi lấy danh sách bộ câu hỏi.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
     // Lấy thông tin chi tiết một danh sách câu hỏi

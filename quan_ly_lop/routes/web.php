@@ -48,11 +48,14 @@ Route::middleware('auth')->group(function () {
     // API tạo và quản lý danh sách câu hỏi
     Route::post('/list-questions/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/list-questions/{course_id}/{lecturer_id}', [ListQuestionController::class, 'showListQuestionForLecturer']);
-    // Trong routes/api.php
     Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
     Route::get('/list-questions', [ListQuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
-
+    Route::get('/list-questions/getAllQuestion', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
+    Route::get('/show', function () {
+        return view('show_class'); // Tạo view student-classes.blade.php
+    });
+    Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
     // API tạo và quản lý câu hỏi
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
@@ -74,8 +77,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 });
-Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
 
 
