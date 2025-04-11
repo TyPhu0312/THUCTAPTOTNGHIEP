@@ -25,7 +25,7 @@ class LoginController extends Controller
 
             // Kiểm tra user tồn tại
             $student = Student::where('school_email', $request->school_email)->first();
-            
+
             if (!$student) {
                 \Log::info('Student not found with email: ' . $request->school_email);
                 return back()
@@ -48,10 +48,9 @@ class LoginController extends Controller
             // Đăng nhập thủ công
             Auth::login($student, $request->filled('remember'));
             $request->session()->regenerate();
-            
+
             return redirect()->intended('/')
                 ->with('success', 'Xin chào ' . $student->full_name . '!');
-
         } catch (\Exception $e) {
             \Log::error('Login error: ' . $e->getMessage());
             \Log::error($e->getTraceAsString());
@@ -68,4 +67,4 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
-} 
+}
