@@ -109,12 +109,12 @@ Route::get('/public-demo', function () {
             'temporary_score' => 8.5
         ],
     ]);
-    
+
     $assignment = (object)[
         'assignment_id' => '123',
         'title' => 'Bài tập cuối kỳ môn Lập trình Web'
     ];
-    
+
     // Use our standalone view file
     return view('submissions.demo', [
         'submissions' => $submissions,
@@ -122,18 +122,15 @@ Route::get('/public-demo', function () {
         'exam_id' => null
     ]);
 });
-    Route::get('/classDetail', function () {
-        return view('show_class'); // Tạo view student-classes.blade.php
-    });
-    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+Route::get('/classDetail', function () {
+    return view('show_class'); // Tạo view student-classes.blade.php
+});
+Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 
-    //lecturer
-    Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
-        return view('lecturerViews.chi_tiet_bo_cau_hoi', [
-            'list_question_id' => $list_question_id,
-        ]);
-    })->name('viewListQuestionDetail');
+//lecturer
+Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
+    return view('lecturerViews.chi_tiet_bo_cau_hoi', [
+        'list_question_id' => $list_question_id,
+    ]);
+})->name('viewListQuestionDetail');
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
-
-
-
