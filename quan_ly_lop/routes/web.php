@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MyClassController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\QuestionController;
@@ -47,16 +48,15 @@ Route::middleware('auth')->group(function () {
 
     // API tạo và quản lý danh sách câu hỏi
     Route::post('/list-questions/create', [ListQuestionController::class, 'storeFromWeb']);
-    Route::get('/list-questions/{course_id}/{lecturer_id}', [ListQuestionController::class, 'showListQuestionForLecturer']);
     Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
     Route::get('/list-questions', [ListQuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
-    Route::get('/list-questions/getAllQuestion', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
     Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+    Route::get('/list-questions/{id}/detail', [ListQuestionController::class, 'chi_tiet_bo_cau_hoi']);
     // API tạo và quản lý câu hỏi
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
-
+    Route::delete('/api/questions/{id}', [QuestionController::class, 'destroy']);
     // API quản lý lựa chọn (options)
     Route::get('/questions/{questionId}/options', [OptionsController::class, 'index']);
     Route::post('/questions/{questionId}/options', [OptionsController::class, 'store']);
@@ -78,6 +78,14 @@ Route::middleware('auth')->group(function () {
         return view('show_class'); // Tạo view student-classes.blade.php
     });
     Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+
+    //lecturer
+    Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
+        return view('lecturerViews.chi_tiet_bo_cau_hoi', [
+            'list_question_id' => $list_question_id,
+        ]);
+    })->name('viewListQuestionDetail');
+
 });
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
 
