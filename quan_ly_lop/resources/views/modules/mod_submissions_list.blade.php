@@ -1,4 +1,3 @@
-@extends('layouts.app')
 @php
 // Determine whether we're viewing assignment or exam submissions
 $type = isset($exam_id) ? 'kiểm tra' : 'tập';
