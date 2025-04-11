@@ -58,7 +58,7 @@
                                             </td>
                                         </tr>
 
-                                        <!-- Grade Modal -->
+                                         Grade Modal 
                                         <div class="modal fade" id="gradeModal{{ $submission->submission_id }}"
                                             tabindex="-1">
                                             <div class="modal-dialog">

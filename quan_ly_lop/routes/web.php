@@ -17,6 +17,8 @@ use App\Http\Controllers\OptionsController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
+use Illuminate\Support\Collection;
+
 
 // Route công khai
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -74,20 +76,61 @@ Route::middleware('auth')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
-    Route::get('/classDetail', function () {
-        return view('show_class'); // Tạo view student-classes.blade.php
-    });
-    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
-
-    //lecturer
-    Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
-        return view('lecturerViews.chi_tiet_bo_cau_hoi', [
-            'list_question_id' => $list_question_id,
-        ]);
-    })->name('viewListQuestionDetail');
-
 });
+Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
+    ->name('submissions.list');
+
+// For testing with dummy data
+// Thêm vào routes/web.php
+// In routes/web.php
+Route::get('/public-demo', function () {
+    $submissions = collect([
+        (object)[
+            'submission_id' => '1',
+            'student' => (object)[
+                'name' => 'Nguyễn Văn A',
+                'student_code' => 'SV001'
+            ],
+            'created_at' => '2025-04-10 14:30:00',
+            'file_path' => 'submissions/bai_nop_1.pdf',
+            'status' => 'submitted',
+            'temporary_score' => null
+        ],
+        (object)[
+            'submission_id' => '2',
+            'student' => (object)[
+                'name' => 'Trần Thị B',
+                'student_code' => 'SV002'
+            ],
+            'created_at' => '2025-04-10 15:00:00',
+            'file_path' => 'submissions/bai_nop_2.pdf',
+            'status' => 'submitted',
+            'temporary_score' => 8.5
+        ],
+    ]);
+
+    $assignment = (object)[
+        'assignment_id' => '123',
+        'title' => 'Bài tập cuối kỳ môn Lập trình Web'
+    ];
+
+    // Use our standalone view file
+    return view('submissions.demo', [
+        'submissions' => $submissions,
+        'assignment' => $assignment,
+        'exam_id' => null
+    ]);
+});
+Route::get('/classDetail', function () {
+    return view('show_class'); // Tạo view student-classes.blade.php
+});
+Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+
+//lecturer
+Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
+    return view('lecturerViews.chi_tiet_bo_cau_hoi', [
+        'list_question_id' => $list_question_id,
+    ]);
+})->name('viewListQuestionDetail');
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
-
-
-
