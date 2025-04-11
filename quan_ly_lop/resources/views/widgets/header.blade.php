@@ -1,6 +1,6 @@
 <style>
     .header-banner {
-        height: 100px;
+        height: 150px;
         overflow: hidden;
     }
 

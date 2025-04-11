@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'students',
         ],
+        'lecturer' => [
+            'driver' => 'session',
+            'provider' => 'lecturers',  // provider cho giảng viên
+        ],
     ],
 
     /*
@@ -64,16 +68,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
         'students' => [
             'driver' => 'eloquent',
             'model' => App\Models\Student::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'lecturers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Lecturer::class,
+        ],
     ],
 
     /*
