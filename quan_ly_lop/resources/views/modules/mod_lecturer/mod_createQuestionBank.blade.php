@@ -328,10 +328,12 @@
         width: 250px;
         border-color: #343a40;
     }
+
     #courseSelect {
         width: fit-content;
         border-color: #343a40;
     }
+
     #startCreateQuestion {
         width: 250px;
     }
@@ -487,10 +489,12 @@
                     data.forEach(item => {
                         const card = document.createElement("div");
                         card.className = "col";
+
                         const lecturerName = item.lecturer?.fullname || "Không rõ";
                         const courseName = item.course?.course_name || "Không rõ";
+
                         card.innerHTML = `
-                    <div class="card h-100 shadow-sm card-hover position-relative">
+                    <div class="card h-100 shadow-sm card-hover position-relative" data-id="${item.list_question_id}">
                         <div class="card-body">
                             <p class="card-text"><strong>Môn học:</strong> ${courseName}</p>
                             <p class="card-text"><strong>Giảng viên:</strong> ${lecturerName}</p>
@@ -499,7 +503,14 @@
                         <div class="arrow-icon">→</div>
                     </div>
                 `;
-                        container.appendChild(card);
+
+                        const cardElement = card.querySelector('.card');
+                        cardElement.addEventListener("click", () => {
+                            const listQuestionId = cardElement.getAttribute("data-id");
+                            window.location.href = `/lecturer/chi_tiet_bo_cau_hoi/${listQuestionId}`;
+                        });
+
+                        container.appendChild(card); // Chỉ append ở đây thôi
                     });
                 })
                 .catch(error => {
@@ -508,6 +519,7 @@
                         `<p class="text-danger">Không thể tải dữ liệu. Vui lòng thử lại sau.</p>`;
                 });
         }
+
         courseFilter.addEventListener("change", function () {
             const selectedValue = this.value;
             const courseId = selectedValue === "all" ? "null" : selectedValue;

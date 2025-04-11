@@ -216,7 +216,7 @@
     <style>
         /* Profile Header */
         .profile-header {
-            background: linear-gradient(135deg, #0061f2 0%, #6610f2 100%);
+            background: linear-gradient(135deg,rgb(16, 42, 80) 0%, #6610f2 100%);
             border: none;
             border-radius: 15px;
             color: white;

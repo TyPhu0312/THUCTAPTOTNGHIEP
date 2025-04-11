@@ -30,7 +30,6 @@
 
             <!-- Thống kê -->
             <div class="stats-row row g-4 mb-4" id="statistical">
-
             </div>
 
             <!-- Thanh tìm kiếm và lọc -->
@@ -175,42 +174,42 @@
             });
 
             const statisticalHTML = `
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-primary-soft">
-                                <i class="fas fa-book-open text-primary"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>${activeClasses}</h3>
-                                <p>Lớp đang học</p>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-primary-soft">
+                                    <i class="fas fa-book-open text-primary"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>${activeClasses}</h3>
+                                    <p>Lớp đang học</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-success-soft">
-                                <i class="fas fa-graduation-cap text-success"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>${completedClasses}</h3>
-                                <p>Đã hoàn thành</p>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-success-soft">
+                                    <i class="fas fa-graduation-cap text-success"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>${completedClasses}</h3>
+                                    <p>Đã hoàn thành</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-info-soft">
-                                <i class="fas fa-clock text-info"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>${totalHours}</h3>
-                                <p>Giờ học</p>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-info-soft">
+                                    <i class="fas fa-clock text-info"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>${totalHours}</h3>
+                                    <p>Giờ học</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
             document.getElementById('statistical').innerHTML = statisticalHTML;
         }
         function renderClasses(data) {
@@ -223,62 +222,61 @@
             let html = '';
             data.forEach(classItem => {
                 html += `
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="class-card card h-100">
-                                <div class="class-card-header">
-                                    <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course_name}">
-                                    <div class="card-img-overlay">
-                                        <span class="badge status-badge
-                                            ${classItem.status === 'Đang diễn ra' || classItem.status === 'Active' ? 'bg-success' :
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="class-card card h-100">
+                                    <div class="class-card-header">
+                                        <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course_name}">
+                                        <div class="card-img-overlay">
+                                            <span class="badge status-badge
+                                                ${classItem.status === 'Đang diễn ra' || classItem.status === 'Active' ? 'bg-success' :
                         classItem.status === 'Drop' ? 'bg-secondary' : 'bg-warning'}">
-                                            ${classItem.status || 'Không rõ'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <p class="card-author mb-0">
-                                            <i class="fas fa-chalkboard-teacher me-2"></i>${classItem.lecturer_name || 'Không rõ'}
-                                        </p>
-                                    </div>
-                                    <h5 class="card-title">${classItem.course_name || 'Tên lớp'}</h5>
-                                    <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
-
-                                    <div class="class-info">
-                                        <div class="info-item">
-                                            <i class="fas fa-users me-2"></i>
-                                            <span>${classItem.total_students || 0}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <i class="fas fa-calendar-alt me-2"></i>
-                                            <span>${classItem.class_duration || 'N/A'}</span>
-                                        </div>
-                                    </div>
-                                    ${classItem.course_score != null ? `
-                                        <div class="mt-2">
-                                            <span class="badge bg-info">
-                                                <i class="fas fa-star me-1"></i> Điểm: ${classItem.course_score}/10
+                                                ${classItem.status || 'Không rõ'}
                                             </span>
                                         </div>
-                                    ` : ''}
+                                    </div>
 
-                                    ${classItem.status !== 'Drop' ? `
-                                            <div class="mt-3">
-                                                <button class="btn btn-primary w-100 join-button"
-                                                    data-course-id="${classItem.course_id}"
-                                                    data-lecturer-id="${classItem.lecturer_id}"
-                                                    data-class-id="${classItem.class_id}">
-                                                    <i class="fas fa-sign-in-alt me-2"></i>Tham gia
-                                                </button>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <p class="card-author mb-0">
+                                                <i class="fas fa-chalkboard-teacher me-2"></i>${classItem.lecturer_name || 'Không rõ'}
+                                            </p>
+                                        </div>
+                                        <h5 class="card-title">${classItem.course_name || 'Tên lớp'}</h5>
+                                        <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
+
+                                        <div class="class-info">
+                                            <div class="info-item">
+                                                <i class="fas fa-users me-2"></i>
+                                                <span>${classItem.total_students || 0}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-calendar-alt me-2"></i>
+                                                <span>${classItem.class_duration || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                        ${classItem.course_score != null ? `
+                                            <div class="mt-2">
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-star me-1"></i> Điểm: ${classItem.course_score}/10
+                                                </span>
                                             </div>
                                         ` : ''}
+
+                                        ${classItem.status !== 'Drop' ? `
+                                                <div class="mt-3">
+                                                    <button class="btn btn-primary w-100 join-button"
+                                                        data-course-id="${classItem.course_id}"
+                                                        data-lecturer-id="${classItem.lecturer_id}"
+                                                        data-class-id="${classItem.class_id}">
+                                                        <i class="fas fa-sign-in-alt me-2"></i>Tham gia
+                                                    </button>
+                                                </div>
+                                            ` : ''}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
             });
-
             container.innerHTML = html;
             attachJoinHandlers();
         }
@@ -289,13 +287,11 @@
                     const courseId = this.getAttribute('data-course-id');
                     const lecturerId = this.getAttribute('data-lecturer-id');
                     const classId = this.getAttribute('data-class-id');
-
                     const listId = {
                         course_id: courseId,
                         lecturer_id: lecturerId,
                         class_id: classId
                     };
-
                     localStorage.setItem("list_id_course_lecturer", JSON.stringify(listId));
 
                     // Tuỳ chọn: điều hướng sang trang
@@ -303,12 +299,11 @@
                 });
             });
         }
-
     </script>
     <style>
         /* Profile Header */
         .profile-header {
-            background: linear-gradient(135deg, #0061f2 0%, #6610f2 100%);
+            background: linear-gradient(135deg, rgb(16, 42, 80) 0%, #6610f2 100%);
             border: none;
             border-radius: 15px;
             color: white;
