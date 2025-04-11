@@ -15,7 +15,10 @@ use App\Http\Controllers\ListQuestionController;
 use App\Http\Controllers\OptionsController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\SubmissionController;
+use Illuminate\Support\Collection;
+
 
 // Route công khai
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -72,3 +75,47 @@ Route::middleware('auth')->group(function () {
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
+    ->name('submissions.list');
+
+// For testing with dummy data
+// Thêm vào routes/web.php
+// In routes/web.php
+Route::get('/public-demo', function () {
+    $submissions = collect([
+        (object)[
+            'submission_id' => '1',
+            'student' => (object)[
+                'name' => 'Nguyễn Văn A',
+                'student_code' => 'SV001'
+            ],
+            'created_at' => '2025-04-10 14:30:00',
+            'file_path' => 'submissions/bai_nop_1.pdf',
+            'status' => 'submitted',
+            'temporary_score' => null
+        ],
+        (object)[
+            'submission_id' => '2',
+            'student' => (object)[
+                'name' => 'Trần Thị B',
+                'student_code' => 'SV002'
+            ],
+            'created_at' => '2025-04-10 15:00:00',
+            'file_path' => 'submissions/bai_nop_2.pdf',
+            'status' => 'submitted',
+            'temporary_score' => 8.5
+        ],
+    ]);
+    
+    $assignment = (object)[
+        'assignment_id' => '123',
+        'title' => 'Bài tập cuối kỳ môn Lập trình Web'
+    ];
+    
+    // Use our standalone view file
+    return view('submissions.demo', [
+        'submissions' => $submissions,
+        'assignment' => $assignment,
+        'exam_id' => null
+    ]);
+});

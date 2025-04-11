@@ -256,24 +256,30 @@ class StudentAssignmentController extends Controller
     }
     // Lấy danh sách tất cả submission của sinh viên theo assignment/exam
     public function listSubmissions(Request $request)
-    {
-        $validated = $request->validate([
-            'student_id' => 'required|uuid|exists:students,id',
-            'type' => 'required|in:assignment,exam',
-            'target_id' => 'required|uuid', // assignment_id hoặc exam_id
+{
+    $validated = $request->validate([
+        'type' => 'required|in:assignment,exam',
+        'target_id' => 'required|uuid', // assignment_id hoặc exam_id
+    ]);
+
+    $query = Submission::query();
+
+    if ($validated['type'] === 'assignment') {
+        $query->where('assignment_id', $validated['target_id']);
+        $assignment = Assignment::findOrFail($validated['target_id']);
+        return view('submissions.index', [
+            'submissions' => $query->with(['student'])->get(),
+            'assignment' => $assignment
         ]);
-
-        $query = Submission::query()
-            ->where('student_id', $validated['student_id']);
-
-        if ($validated['type'] === 'assignment') {
-            $query->where('assignment_id', $validated['target_id']);
-        } else {
-            $query->where('exam_id', $validated['target_id']);
-        }
-
-        return response()->json($query->with(['student'])->get());
+    } else {
+        $query->where('exam_id', $validated['target_id']);
+        $exam = Exam::findOrFail($validated['target_id']);
+        return view('submissions.index', [
+            'submissions' => $query->with(['student'])->get(),
+            'exam' => $exam
+        ]);
     }
+}
 
     // Tạo mới submission
     public function storeSubmission(Request $request)
