@@ -4,7 +4,7 @@
 
 <body>
 
-	@include('widgets.headerLecture')
+    @include('widgets.headerLecture')
 
     @yield('main-content')
 

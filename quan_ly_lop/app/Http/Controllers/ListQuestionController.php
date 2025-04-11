@@ -6,7 +6,7 @@ use App\Models\ListQuestion;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\Auth;
 class ListQuestionController extends Controller
 {
     // Lấy danh sách câu hỏi của một môn học cụ thể
@@ -14,16 +14,36 @@ class ListQuestionController extends Controller
     {
         $courses = Course::all();
         $listQuestions = ListQuestion::all();
-        if ($request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'courses' => $courses,
-                'list_questions' => $listQuestions
-            ]);
-        }
-
-        // Nếu không phải AJAX, trả về view
         return view('lecturerViews.question_bank', compact('courses', 'listQuestions'));
+    }
+    public function getAllListQuestionsWithLecturer($course_id, $lecturer_id)
+    {
+        try {
+            $query = ListQuestion::with([
+                'lecturer' => function ($query) {
+                    $query->select('lecturer_id', 'fullname');
+                },
+                'course' => function ($query) {
+                    $query->select('course_id', 'course_name');
+                }
+            ])->where('lecturer_id', $lecturer_id);
+
+            // Nếu có course_id thì mới filter thêm
+            if ($course_id !== 'null' && $course_id !== '' && $course_id !== null) {
+                $query->where('course_id', $course_id);
+            }
+
+            $listQuestions = $query->orderByDesc('created_at')->get();
+
+            return response()->json($listQuestions);
+        } catch (\Exception $e) {
+            \Log::error('Lỗi lấy danh sách bộ câu hỏi: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Đã xảy ra lỗi khi lấy danh sách bộ câu hỏi.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 
@@ -38,10 +58,53 @@ class ListQuestionController extends Controller
 
         return view('modules.mod_lecturer.mod_createQuestionBank', compact('listQuestion'));
     }
+    public function showDetailQuestion($list_question_id)
+    {
+        try {
+            if (empty($list_question_id)) {
+                return response()->json([
+                    'message' => 'Thiếu list_question_id trong request!'
+                ], 400);
+            }
+
+            $listQuestions = ListQuestion::with(['course', 'lecturer', 'questions.options'])
+                ->where('list_question_id', $list_question_id)
+                ->first();
+
+            if (!$listQuestions) {
+                return response()->json(['message' => 'Không tìm thấy danh sách câu hỏi!'], 404);
+            }
+
+            $formattedQuestions = $listQuestions->questions->map(function ($question) {
+                return [
+                    'question_id' => $question->question_id,
+                    'title' => $question->title,
+                    'content' => $question->content,
+                    'type' => $question->type,
+                    'correct_answer' => $question->correct_answer,
+                    'options' => $question->options->pluck('option_text')->toArray(),
+                ];
+            });
+
+            return response()->json([
+                'data' => [
+                    'course_id' => $listQuestions->course_id,
+                    'course_name' => $listQuestions->course->course_name,
+                    'questions' => $formattedQuestions
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'details' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            ], 500);
+        }
+    }
 
 
-
-    // Tạo danh sách câu hỏi mới, nếu chưa tồn tại
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -56,8 +119,12 @@ class ListQuestionController extends Controller
             // Tạo mới danh sách câu hỏi
             $validatedData = $request->validate([
                 'course_id' => 'required|string|exists:course,course_id',
+                'lecturer_id' => 'required|string|exists:lecturer,lecturer_id'
             ]);
-            $listQuestion = ListQuestion::create($validatedData);
+            $listQuestion = ListQuestion::create([
+                'course_id' => $validatedData['course_id'],
+                'lecturer_id' => $validatedData['lecturer_id'], // Lưu lecturer_id
+            ]);
 
             return response()->json([
                 'success' => true,

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MyClassController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\QuestionController;
@@ -15,7 +16,6 @@ use App\Http\Controllers\ListQuestionController;
 use App\Http\Controllers\OptionsController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
-use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Collection;
 
@@ -48,19 +48,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
     Route::get('/export-pdf/{course_id}', [PDFController::class, 'exportScores']);
 
-
     // API tạo và quản lý danh sách câu hỏi
     Route::post('/list-questions/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/list-questions/{id}', [ListQuestionController::class, 'show']);
     Route::get('/list-questions', [ListQuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
+    Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
+    Route::get('/list-questions/{id}/detail', [ListQuestionController::class, 'chi_tiet_bo_cau_hoi']);
     // API tạo và quản lý câu hỏi
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/questions/batch', [QuestionController::class, 'storeBatch']);
+    Route::delete('/api/questions/{id}', [QuestionController::class, 'destroy']);
     // API quản lý lựa chọn (options)
     Route::get('/questions/{questionId}/options', [OptionsController::class, 'index']);
     Route::post('/questions/{questionId}/options', [OptionsController::class, 'store']);
     Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+
     // API quản lý bài thi
     Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
     Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
@@ -119,3 +122,18 @@ Route::get('/public-demo', function () {
         'exam_id' => null
     ]);
 });
+    Route::get('/classDetail', function () {
+        return view('show_class'); // Tạo view student-classes.blade.php
+    });
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+
+    //lecturer
+    Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
+        return view('lecturerViews.chi_tiet_bo_cau_hoi', [
+            'list_question_id' => $list_question_id,
+        ]);
+    })->name('viewListQuestionDetail');
+Route::get('/list-questions', [ListQuestionController::class, 'index']);
+
+
+

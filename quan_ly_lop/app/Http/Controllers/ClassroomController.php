@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -27,6 +29,49 @@ class ClassroomController extends Controller
         }
         return response()->json($classroom, Response::HTTP_OK);
     }
+
+    public function getStudentClasses($studentId)
+    {
+        // Lấy thông tin sinh viên từ bảng student
+        $student = DB::table('student')->where('student_id', $studentId)->first();
+
+        // Kiểm tra nếu sinh viên tồn tại
+        if (!$student) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        // Truy vấn các lớp học của sinh viên
+        $classes = DB::table('classroom')
+            ->join('student_class', 'classroom.class_id', '=', 'student_class.class_id')
+            ->join('course', 'classroom.course_id', '=', 'course.course_id')
+            ->join('lecturer', 'classroom.lecturer_id', '=', 'lecturer.lecturer_id')
+            ->leftJoin('score', function($join) {
+                $join->on('score.student_id', '=', 'student_class.student_id')
+                     ->on('score.course_id', '=', 'classroom.course_id');
+            })
+            ->where('student_class.student_id', $student->student_id) // Sử dụng student_id của đối tượng sinh viên
+            ->select(
+                'classroom.class_id',
+                'classroom.class_code',
+                'classroom.class_description',
+                'classroom.class_duration',
+                'course.course_name',
+                'course.course_id',
+                'lecturer.lecturer_id',
+                'lecturer.fullname as lecturer_name',
+                'lecturer.school_email',
+                'lecturer.phone',
+                'student_class.status',
+                'student_class.final_score',
+                'score.final_score as course_score'
+            )
+            ->distinct()
+            ->get();
+
+        return response()->json($classes);
+    }
+
+
 
     /**
      * Thêm mới một lớp học
