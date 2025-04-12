@@ -43,6 +43,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
+    Route::get('/hoanthanh', function () {
+        return view('hoanthanh', [
+            'courseName' => 'Lập trình Web',
+            'examTitle' => 'Bài kiểm tra giữa kỳ',
+            'teacherName' => 'Nguyễn Văn A',
+            'completedExams' => 5,
+            'totalExams' => 5,
+            'examScore' => 8.5,
+            'examTime' => '45 phút',
+            'completionTime' => '10:30 12/04/2025',
+            'homeLink' => route('home'), // Đảm bảo bạn có route tên 'home'
+        ]);
+    })->name('hoanthanh');
+
     Route::get('/my-classes', [MyClassController::class, 'index'])->name('my-classes');
     Route::get('/class/{class_code}', [ClassroomController::class, 'show'])->name('classroom.show');
     Route::post('/class/join/{class_code}', [ClassroomController::class, 'join'])->name('classroom.join');
@@ -81,14 +95,11 @@ Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb
 Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
     ->name('submissions.list');
 
-// For testing with dummy data
-// Thêm vào routes/web.php
-// In routes/web.php
 Route::get('/public-demo', function () {
     $submissions = collect([
-        (object)[
+        (object) [
             'submission_id' => '1',
-            'student' => (object)[
+            'student' => (object) [
                 'name' => 'Nguyễn Văn A',
                 'student_code' => 'SV001'
             ],
@@ -97,9 +108,9 @@ Route::get('/public-demo', function () {
             'status' => 'submitted',
             'temporary_score' => null
         ],
-        (object)[
+        (object) [
             'submission_id' => '2',
-            'student' => (object)[
+            'student' => (object) [
                 'name' => 'Trần Thị B',
                 'student_code' => 'SV002'
             ],
@@ -110,7 +121,7 @@ Route::get('/public-demo', function () {
         ],
     ]);
 
-    $assignment = (object)[
+    $assignment = (object) [
         'assignment_id' => '123',
         'title' => 'Bài tập cuối kỳ môn Lập trình Web'
     ];
