@@ -47,25 +47,28 @@
         transition: width 0.3s ease;
         -webkit-transition: width 0.3s ease;
     }
-
     .nav-link:hover::after {
         width: 100%;
         left: 0;
         background: #007bff;
     }
-
-    /* Tăng size icon */
     .navbar-nav .bi {
         font-size: 1.8rem;
-        /* Kích thước icon lớn hơn */
     }
-
+    .dropdown-item:hover {
+        color: black !important;
+        border: 1px solid #007bff;
+        cursor: pointer;
+    }
+    .logoutButton {
+        color: red !important;
+        border: 1px solidrgb(230, 62, 40) !important;
+        cursor: pointer;
+    }
     @media (max-width: 768px) {
         .nav-link {
             font-size: 1rem;
-            /* Trên mobile nhỏ lại chút */
         }
-
         .navbar-nav .bi {
             font-size: 1.5rem;
         }
@@ -112,12 +115,6 @@
                         VIỆC CẦN LÀM
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'createQuestion' ? 'active-nav' : '' }}"
-                        href="{{ route('createQuestion') }}">
-                        TẠO BÀI THI
-                    </a>
-                </li>
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
@@ -125,15 +122,20 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         @auth
-                            <li><a class="dropdown-item" href="#">{{ Auth::user()->full_name }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="{{ route('account') }}">{{ Auth::user()->full_name }}</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('createQuestion') }}">Tạo bài Thi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('hoanthanh') }}">Hoàn thành</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                    <button type="submit" class="dropdown-item logoutButton">Đăng xuất</button>
                                 </form>
                             </li>
                         @else
