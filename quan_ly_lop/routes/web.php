@@ -33,6 +33,7 @@ Route::middleware('guest')->group(function () {
 
 // Routes yêu cầu đăng nhập
 Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('homeLoggedIn');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/myclass', [MyClassController::class, 'index'])->name('myclass');
     Route::get('/account', [AccountController::class, 'index'])->name('account');
