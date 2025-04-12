@@ -128,6 +128,7 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="{{ route('createQuestion') }}">Tạo bài Thi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('createQuestion') }}">Tạo bài Thi</a></li>
                             <li><a class="dropdown-item" href="{{ route('hoanthanh') }}">Hoàn thành</a></li>
                             <li>
                                 <hr class="dropdown-divider">

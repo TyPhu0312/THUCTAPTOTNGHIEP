@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('templates.template_normal')
 
-@section('content')
+@section('main-content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -9,7 +9,6 @@
                         <h3>Submissions for {{ $type === 'assignment' ? 'Assignment' : 'Exam' }}: {{ $item->title }}</h3>
                         <a href="{{ url()->previous() }}" class="btn btn-secondary">Back</a>
                     </div>
-
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -58,7 +57,7 @@
                                             </td>
                                         </tr>
 
-                                         Grade Modal 
+                                         Grade Modal
                                         <div class="modal fade" id="gradeModal{{ $submission->submission_id }}"
                                             tabindex="-1">
                                             <div class="modal-dialog">
