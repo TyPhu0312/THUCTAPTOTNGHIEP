@@ -73,55 +73,36 @@ Route::middleware('auth')->group(function () {
     Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
 
     // Submission routes
-    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
-    Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
-    Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+    // Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    // Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
+    // Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
     ->name('submissions.list');
-
-// For testing with dummy data
-// Thêm vào routes/web.php
 // In routes/web.php
-Route::get('/public-demo', function () {
-    $submissions = collect([
-        (object)[
-            'submission_id' => '1',
-            'student' => (object)[
-                'name' => 'Nguyễn Văn A',
-                'student_code' => 'SV001'
-            ],
-            'created_at' => '2025-04-10 14:30:00',
-            'file_path' => 'submissions/bai_nop_1.pdf',
-            'status' => 'submitted',
-            'temporary_score' => null
-        ],
-        (object)[
-            'submission_id' => '2',
-            'student' => (object)[
-                'name' => 'Trần Thị B',
-                'student_code' => 'SV002'
-            ],
-            'created_at' => '2025-04-10 15:00:00',
-            'file_path' => 'submissions/bai_nop_2.pdf',
-            'status' => 'submitted',
-            'temporary_score' => 8.5
-        ],
-    ]);
 
-    $assignment = (object)[
-        'assignment_id' => '123',
-        'title' => 'Bài tập cuối kỳ môn Lập trình Web'
-    ];
-
-    // Use our standalone view file
-    return view('submissions.demo', [
-        'submissions' => $submissions,
-        'assignment' => $assignment,
-        'exam_id' => null
-    ]);
+Route::prefix('submissions')->group(function () {
+    // Danh sách bài nộp theo loại (assignment/exam) và ID
+    Route::get('/{type}/{id}', [SubmissionController::class, 'index'])->name('submissions.demo');
+    
+    // Chi tiết một bài nộp
+    Route::get('/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
 });
+
+// API Routes cho tương tác AJAX
+Route::prefix('api/submissions')->group(function () {
+    // Lưu bài nộp mới (POST)
+    Route::post('/store', [SubmissionController::class, 'store']);
+    
+    // Cập nhật điểm bài nộp (PUT)
+    Route::put('/update/{id}', [SubmissionController::class, 'update']);
+    
+    // Xóa bài nộp (DELETE)
+    Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
+});
+
+
 Route::get('/classDetail', function () {
     return view('show_class'); // Tạo view student-classes.blade.php
 });
