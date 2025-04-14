@@ -10,7 +10,7 @@ use App\Helpers\StringHelper;
 class Classroom extends Model
 {
     use HasFactory;
-    protected $table = 'class';
+    protected $table = 'classroom';
     protected $primaryKey = 'class_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -24,7 +24,7 @@ class Classroom extends Model
         'class_duration',
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected static function boot()
     {
@@ -79,4 +79,9 @@ class Classroom extends Model
     public function lecturer()
     {
         return $this->belongsTo(Lecturer::class, 'lecturer_id');
+<<<<<<< HEAD
     }}
+=======
+    }
+}
+>>>>>>> c3625acc5bb1d7578809f4c590a444ebdd2e7af8

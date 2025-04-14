@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'lecturers',
         ],
+        'lecturer' => [
+            'driver' => 'session',
+            'provider' => 'lecturers',  // provider cho giảng viên
+        ],
     ],
 
     /*
@@ -68,21 +72,26 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
         'students' => [
             'driver' => 'eloquent',
             'model' => App\Models\Student::class,
         ],
+<<<<<<< HEAD
 
+=======
+>>>>>>> c3625acc5bb1d7578809f4c590a444ebdd2e7af8
         'lecturers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Lecturer::class,
         ],
+<<<<<<< HEAD
 
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+=======
+>>>>>>> c3625acc5bb1d7578809f4c590a444ebdd2e7af8
     ],
 
     /*

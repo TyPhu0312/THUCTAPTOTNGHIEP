@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Student;
+use App\Models\Lecturer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -14,7 +16,6 @@ class LoginController extends Controller
     {
         return view('auth.login');
     }
-
     public function login(Request $request)
     {
         try {
@@ -23,38 +24,42 @@ class LoginController extends Controller
                 'password' => 'required',
             ]);
 
-            // Kiểm tra user tồn tại
+            // Tìm người dùng theo email
             $student = Student::where('school_email', $request->school_email)->first();
-            
-            if (!$student) {
-                \Log::info('Student not found with email: ' . $request->school_email);
+            $lecturer = Lecturer::where('school_email', $request->school_email)->first();
+
+            if (!$student && !$lecturer) {
                 return back()
                     ->withInput($request->except('password'))
-                    ->withErrors([
-                        'school_email' => 'Email không tồn tại trong hệ thống.',
-                    ]);
+                    ->withErrors(['school_email' => 'Email không tồn tại trong hệ thống.']);
             }
 
-            // Kiểm tra mật khẩu trực tiếp
-            if (!Hash::check($request->password, $student->password)) {
-                \Log::info('Password incorrect for email: ' . $request->school_email);
-                return back()
-                    ->withInput($request->except('password'))
-                    ->withErrors([
-                        'password' => 'Mật khẩu không chính xác.',
-                    ]);
+            // Nếu là sinh viên
+            if ($student) {
+                if (!Hash::check($request->password, $student->password)) {
+                    return back()
+                        ->withInput($request->except('password'))
+                        ->withErrors(['password' => 'Mật khẩu không chính xác.']);
+                }
+                Auth::login($student, $request->filled('remember'));
+                $request->session()->regenerate();
+                return redirect()->intended('/home')->with('success', 'Xin chào ' . $student->full_name . '!');
             }
-
-            // Đăng nhập thủ công
-            Auth::login($student, $request->filled('remember'));
-            $request->session()->regenerate();
-            
-            return redirect()->intended('/')
-                ->with('success', 'Xin chào ' . $student->full_name . '!');
+            // Nếu là giảng viên
+            if ($lecturer) {
+                if (!Hash::check($request->password, $lecturer->password)) {
+                    return back()
+                        ->withInput($request->except('password'))
+                        ->withErrors(['password' => 'Mật khẩu không chính xác.']);
+                }
+                \Log::info('Logging in lecturer: ' . $lecturer->fullname);
+                Auth::guard('lecturer')->login($lecturer);
+                $request->session()->regenerate();
+                return redirect()->intended('/home')->with('success', 'Xin chào ' . $lecturer->fullname . '!');
+            }
 
         } catch (\Exception $e) {
-            \Log::error('Login error: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
+            dd($e->getMessage(), $e->getTraceAsString());
             return back()
                 ->withInput($request->except('password'))
                 ->withErrors(['error' => 'Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.']);
@@ -66,6 +71,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login')->with('success', 'Đăng xuất thành công.');
     }
-} 
+}

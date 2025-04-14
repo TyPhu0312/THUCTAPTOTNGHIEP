@@ -78,6 +78,7 @@ Route::prefix('courses')->group(function () {
     Route::get('/', [CourseController::class, 'index']);
     Route::post('/create', [CourseController::class, 'store']);
     Route::get('/getById/{id}', [CourseController::class, 'show']);
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent']);
     Route::put('/update/{id}', [CourseController::class, 'update']);
     Route::delete('/delete/{id}', [CourseController::class, 'destroy']);
 });
@@ -94,10 +95,12 @@ Route::prefix('lecturers')->group(function () {
 // API cho ListQuestion
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
+    Route::get('/detail/{list_question_id}', [ListQuestionController::class, 'showDetailQuestion']);
     Route::post('/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
+    Route::get('/getAllQuestion/{course_id}/{lecturer_id}', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
 });
 
 // API cho Options
@@ -164,6 +167,7 @@ Route::prefix('classrooms')->group(function () {
     Route::get('/getById/{id}', [ClassroomController::class, 'show']);
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
+    Route::get('/student-classes/{student_code}', [ClassroomController::class, 'getStudentClasses']);
 });
 
 // Nhóm routes cho sinh viên
@@ -188,11 +192,21 @@ Route::prefix('student')->group(function () {
 
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
+
+    // 🔽 Thêm CRUD Submission
+    Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
+    Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
+    Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
+    Route::put('/submissions/{id}', [StudentAssignmentController::class, 'updateSubmission']);
+    Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
 });
 
+<<<<<<< HEAD
 // API cho IT Courses
 Route::prefix('it-courses')->group(function () {
     Route::get('/', [ITCourseController::class, 'index']);
     Route::get('/search', [ITCourseController::class, 'search']);
     Route::get('/{id}/books', [ITCourseController::class, 'getRecommendedBooks']);
 });
+=======
+>>>>>>> c3625acc5bb1d7578809f4c590a444ebdd2e7af8
