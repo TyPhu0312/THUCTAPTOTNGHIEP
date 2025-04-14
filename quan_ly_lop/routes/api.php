@@ -188,4 +188,12 @@ Route::prefix('student')->group(function () {
 
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
+
+    // 🔽 Thêm CRUD Submission
+    Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
+    Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
+    Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
+    Route::put('/submissions/{id}', [StudentAssignmentController::class, 'updateSubmission']);
+    Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
 });
+
