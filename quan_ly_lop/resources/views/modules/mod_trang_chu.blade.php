@@ -1,143 +1,109 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            @auth
-                <!-- Thông tin người dùng -->
-                <div class="card welcome-card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar-circle me-4">
-                                <i class="fas fa-user-circle fa-3x text-white"></i>
-                            </div>
-                            <div>
-                                <h4 class="card-title mb-1">Xin chào, {{ Auth::user()->full_name }}!</h4>
-                                <p class="card-text text-muted mb-0">{{ Auth::user()->student_code }}</p>
-                            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Phần tìm kiếm và bộ lọc -->
+            <div class="search-filter-container mb-4">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control search-input" 
+                                   id="searchKeyword"
+                                   placeholder="Tìm kiếm lớp học...">
+                            <button class="btn btn-primary" id="searchBtn">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Tất cả lớp học</option>
+                            <option value="active">Đang diễn ra</option>
+                            <option value="upcoming">Sắp khai giảng</option>
+                            <option value="completed">Đã kết thúc</option>
+                        </select>
                     </div>
                 </div>
+            </div>
 
-                <!-- Thanh tìm kiếm và lọc -->
-                <div class="search-filter-container mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <input type="text" class="form-control search-input" placeholder="Tìm kiếm lớp học...">
-                                <button class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <select class="form-select">
-                                <option selected>Tất cả lớp học</option>
-                                <option>Đang diễn ra</option>
-                                <option>Sắp khai giảng</option>
-                                <option>Đã kết thúc</option>
-                            </select>
-                        </div>
-                    </div>
+            <!-- Danh sách lớp học -->
+            <div class="classes-container mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="section-title">Lớp học hiện có</h3>
+                    <a href="{{ route('myclass') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-book-reader me-2"></i>Xem lớp của tôi
+                    </a>
                 </div>
 
-                <!-- Danh sách lớp học -->
-                <div class="classes-container mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="section-title">Lớp học hiện có</h3>
-                        <a href="{{ route('myclass') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-book-reader me-2"></i>Xem lớp của tôi
-                        </a>
-                    </div>
-                    <div class="row g-4">
-                        @foreach($classes as $class)
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="class-card card h-100">
-                                    <div class="card-img-wrapper">
-                                        <img src="{{ $class['image'] }}" class="card-img-top" alt="{{ $class['title'] }}">
-                                        <div class="card-img-overlay">
-                                            <span class="badge status-badge {{ $class['status'] == 'Đang diễn ra' ? 'bg-success' : 'bg-warning' }}">
-                                                {{ $class['status'] }}
-                                            </span>
-                                        </div>
+                <div class="row g-4" id="searchResults">
+                    @foreach($classes as $class)
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="class-card card h-100">
+                            <div class="card-img-wrapper">
+                                <img src="{{ $class['image'] }}" class="card-img-top" alt="{{ $class['title'] }}">
+                                <div class="card-img-overlay">
+                                    <span class="badge status-badge {{ $class['status'] == 'Đang diễn ra' ? 'bg-success' : 'bg-warning' }}">
+                                        {{ $class['status'] }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $class['title'] }}</h5>
+                                <p class="card-text">{{ $class['description'] }}</p>
+                                <div class="class-info">
+                                    <div class="info-item">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                        <span>{{ $class['author'] }}</span>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <p class="card-author mb-0">
-                                                <i class="fas fa-chalkboard-teacher me-2"></i>{{ $class['author'] }}
-                                            </p>
-                                        </div>
-                                        <h5 class="card-title">{{ $class['title'] }}</h5>
-                                        <p class="card-text text-muted">{{ $class['description'] }}</p>
-
-                                        @if(isset($class['progress']))
-                                            <div class="progress-wrapper mb-3">
-                                                <div class="progress">
-                                                    <div class="progress-bar" role="progressbar"
-                                                         style="width: {{ $class['progress'] }}%"
-                                                         aria-valuenow="{{ $class['progress'] }}"
-                                                         aria-valuemin="0"
-                                                         aria-valuemax="100">
-                                                    </div>
-                                                </div>
-                                                <small class="progress-text">{{ $class['progress'] }}% hoàn thành</small>
-                                            </div>
-                                        @endif
-
-                                        <div class="class-info">
-                                            <div class="info-item">
-                                                <i class="fas fa-users me-2"></i>
-                                                <span>{{ $class['student'] }}</span>
-                                            </div>
-                                            <div class="info-item">
-                                                <i class="fas fa-calendar-alt me-2"></i>
-                                                <span>{{ $class['date'] }}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-3">
-                                            <a href="#" class="btn btn-primary w-100">
-                                                <i class="fas fa-sign-in-alt me-2"></i>Tham gia
-                                            </a>
-                                        </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>{{ $class['date'] }}</span>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
+                    @endforeach
                 </div>
-            @else
-                <!-- Trang chào mừng cho khách -->
-                <div class="welcome-container text-center py-5">
-                    <div class="welcome-icon mb-4">
-                        <i class="fas fa-graduation-cap fa-4x text-primary"></i>
-                    </div>
-                    <h2 class="welcome-title mb-3">Chào mừng đến với hệ thống quản lý lớp học</h2>
-                    <p class="welcome-text mb-4">Đăng nhập để trải nghiệm đầy đủ các tính năng của hệ thống.</p>
-                    <div class="welcome-buttons">
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-lg me-3">
-                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-                        </a>
-                        <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Đăng ký
-                        </a>
-                    </div>
-                </div>
-            @endauth
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-/* Card styles */
+.search-filter-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    height: 45px;
+    border-radius: 10px 0 0 10px !important;
+    border: 2px solid #e0e0e0;
+    border-right: none;
+}
+
+.search-input:focus {
+    box-shadow: none;
+    border-color: #007bff;
+}
+
+.input-group .btn {
+    border-radius: 0 10px 10px 0;
+    padding: 0 20px;
+}
+
+.form-select {
+    height: 45px;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+}
+
 .class-card {
     border: none;
     border-radius: 15px;
@@ -163,18 +129,6 @@
     object-fit: cover;
 }
 
-/* Avatar styles */
-.avatar-circle {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(45deg, #007bff, #6610f2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Status badge */
 .status-badge {
     position: absolute;
     top: 15px;
@@ -184,80 +138,26 @@
     font-size: 0.85rem;
 }
 
-/* Progress bar */
-.progress-wrapper {
-    position: relative;
-}
-
-.progress {
-    height: 8px;
-    border-radius: 4px;
-    background-color: #e9ecef;
-}
-
-.progress-bar {
-    background: linear-gradient(45deg, #007bff, #6610f2);
-}
-
-.progress-text {
-    position: absolute;
-    right: 0;
-    top: -20px;
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-/* Class info */
 .class-info {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #6c757d;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
 }
 
 .info-item {
     display: flex;
     align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
 }
 
-/* Welcome section */
-.welcome-container {
-    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    padding: 3rem !important;
-}
-
-.welcome-icon {
+.info-item i {
     color: #007bff;
 }
 
-.welcome-title {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.welcome-text {
-    color: #6c757d;
-    font-size: 1.1rem;
-}
-
-/* Search and filter */
-.search-input {
-    border-radius: 20px 0 0 20px;
-    padding-left: 20px;
-}
-
-.search-input + .btn {
-    border-radius: 0 20px 20px 0;
-}
-
-.form-select {
-    border-radius: 20px;
-    padding-left: 20px;
-}
-
-/* Section title */
 .section-title {
     color: #2c3e50;
     font-weight: 600;
@@ -276,4 +176,81 @@
     border-radius: 2px;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchKeyword = document.getElementById('searchKeyword');
+    const searchBtn = document.getElementById('searchBtn');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchResults = document.getElementById('searchResults');
+    
+    let searchTimeout = null;
+    
+    function performSearch() {
+        const keyword = searchKeyword.value;
+        const status = statusFilter.value;
+        
+        fetch(`/api/classrooms/search?keyword=${encodeURIComponent(keyword)}&status=${encodeURIComponent(status)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayResults(data.data);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi tìm kiếm:', error);
+            });
+    }
+    
+    function displayResults(classes) {
+        if (classes.length === 0) {
+            searchResults.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <h4 class="text-muted">Không tìm thấy kết quả nào</h4>
+                </div>
+            `;
+            return;
+        }
+        
+        searchResults.innerHTML = classes.map(classroom => `
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="class-card card h-100">
+                    <div class="card-img-wrapper">
+                        <img src="${classroom.image || '/images/default-class.jpg'}" 
+                             class="card-img-top" 
+                             alt="${classroom.class_code}">
+                        <div class="card-img-overlay">
+                            <span class="badge status-badge ${classroom.status === 'active' ? 'bg-success' : 'bg-warning'}">
+                                ${classroom.status === 'active' ? 'Đang diễn ra' : 'Sắp khai giảng'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${classroom.class_code}</h5>
+                        <p class="card-text">${classroom.class_description || 'Không có mô tả'}</p>
+                        <div class="class-info">
+                            <div class="info-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>${classroom.lecturer ? classroom.lecturer.fullname : 'Chưa có giảng viên'}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>${new Date(classroom.created_at).toLocaleDateString('vi-VN')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Event listeners
+    searchKeyword.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+    });
+    searchBtn.addEventListener('click', performSearch);
+    statusFilter.addEventListener('change', performSearch);
+});
+</script>
 @endsection

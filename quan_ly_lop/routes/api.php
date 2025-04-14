@@ -18,6 +18,7 @@ use App\Http\Controllers\SubListQuestionController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
+use App\Http\Controllers\ITCourseController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -157,11 +158,14 @@ Route::prefix('assignments')->group(function () {
 // API cho Classroom
 Route::prefix('classrooms')->group(function () {
     Route::get('/', [ClassroomController::class, 'index']);
+    Route::get('/search', [ClassroomController::class, 'search']);
+    Route::get('/filters', [ClassroomController::class, 'getFilters']);
     Route::post('/create', [ClassroomController::class, 'store']);
     Route::get('/getById/{id}', [ClassroomController::class, 'show']);
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
 });
+
 // Nhóm routes cho sinh viên
 Route::prefix('student')->group(function () {
     // Xem danh sách bài thi
@@ -184,4 +188,11 @@ Route::prefix('student')->group(function () {
 
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
+});
+
+// API cho IT Courses
+Route::prefix('it-courses')->group(function () {
+    Route::get('/', [ITCourseController::class, 'index']);
+    Route::get('/search', [ITCourseController::class, 'search']);
+    Route::get('/{id}/books', [ITCourseController::class, 'getRecommendedBooks']);
 });
