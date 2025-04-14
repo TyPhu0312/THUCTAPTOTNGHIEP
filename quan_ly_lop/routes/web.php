@@ -18,6 +18,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Collection;
+use App\Http\Controllers\GradingController;
 
 
 // Route công khai
@@ -91,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+
+    // Grading routes
+    Route::post('/submissions/{submission_id}/grade', [GradingController::class, 'gradeSubmission'])->name('submissions.grade');
+    Route::post('/submissions/{submission_id}/manual-grade', [GradingController::class, 'updateManualGrades'])->name('submissions.manual-grade');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
