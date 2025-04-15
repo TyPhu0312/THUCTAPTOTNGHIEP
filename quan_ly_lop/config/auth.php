@@ -38,11 +38,11 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'students',
+            'provider' => 'users',
         ],
         'lecturer' => [
             'driver' => 'session',
-            'provider' => 'lecturers',  // provider cho giảng viên
+            'provider' => 'lecturers',
         ],
     ],
 
@@ -72,10 +72,16 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Student::class,
         ],
+
         'lecturers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Lecturer::class,
         ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
     ],
 
     /*
