@@ -54,6 +54,7 @@ Route::prefix('answer')->group(function () {
 
 // API cho Submission
 Route::prefix('submissions')->group(function () {
+    Route::get('/public-submissions/{type}/{id}', [SubmissionController::class, 'publicIndex']);
     Route::get('/', [SubmissionController::class, 'index']);
     Route::post('/create', [SubmissionController::class, 'store']);
     Route::get('/getById/{id}', [SubmissionController::class, 'show']);

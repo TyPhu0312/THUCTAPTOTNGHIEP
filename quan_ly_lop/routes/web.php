@@ -31,6 +31,42 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
+Route::prefix('submissions')->group(function () {
+    // Danh sách bài nộp theo loại (assignment/exam) và ID
+    Route::get('/public-submissions/{type}/{id}', function($type, $id) {
+        if ($type === 'assignment') {
+            $item = App\Models\Assignment::findOrFail($id);
+            $submissions = App\Models\Submission::where('assignment_id', $id)
+                ->with('student')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $item = App\Models\Exam::findOrFail($id);
+            $submissions = App\Models\Submission::where('exam_id', $id)
+                ->with('student')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        
+        return view('submissions.demo', compact('submissions', 'item', 'type'));
+    });
+    
+    // Chi tiết một bài nộp
+    Route::get('/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
+});
+
+// API Routes cho tương tác AJAX
+Route::prefix('api/submissions')->group(function () {
+    // Lưu bài nộp mới (POST)
+    Route::post('/store', [SubmissionController::class, 'store']);
+    
+    // Cập nhật điểm bài nộp (PUT)
+    Route::put('/update/{id}', [SubmissionController::class, 'update']);
+    
+    // Xóa bài nộp (DELETE)
+    Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
+});
+
 // Routes yêu cầu đăng nhập
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -82,25 +118,6 @@ Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\Student
     ->name('submissions.list');
 // In routes/web.php
 
-Route::prefix('submissions')->group(function () {
-    // Danh sách bài nộp theo loại (assignment/exam) và ID
-    Route::get('/{type}/{id}', [SubmissionController::class, 'index'])->name('submissions.demo');
-    
-    // Chi tiết một bài nộp
-    Route::get('/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
-});
-
-// API Routes cho tương tác AJAX
-Route::prefix('api/submissions')->group(function () {
-    // Lưu bài nộp mới (POST)
-    Route::post('/store', [SubmissionController::class, 'store']);
-    
-    // Cập nhật điểm bài nộp (PUT)
-    Route::put('/update/{id}', [SubmissionController::class, 'update']);
-    
-    // Xóa bài nộp (DELETE)
-    Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
-});
 
 
 Route::get('/classDetail', function () {
