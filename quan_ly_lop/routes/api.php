@@ -86,6 +86,7 @@ Route::prefix('courses')->group(function () {
 // API cho Lecturer
 Route::prefix('lecturers')->group(function () {
     Route::get('/', [LecturerController::class, 'index']);
+    Route::get('/{id}/classrooms', [LecturerController::class, 'getClassrooms']);
     Route::post('/create', [LecturerController::class, 'store']);
     Route::get('/getById/{id}', [LecturerController::class, 'show']);
     Route::put('/update/{id}', [LecturerController::class, 'update']);
@@ -100,7 +101,7 @@ Route::prefix('list-questions')->group(function () {
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
-    Route::get('/getAllQuestion/{course_id}/{lecturer_id}', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
+    Route::get('/{lecturer_id}', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
 });
 
 // API cho Options
