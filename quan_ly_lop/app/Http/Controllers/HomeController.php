@@ -8,6 +8,7 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $user = getLoggedInUser();
         $classes = [
             [
                 'image' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
@@ -42,10 +43,9 @@ class HomeController extends Controller
                 'class_code' => 'AI101'
             ]
         ];
-
         return view('modules.mod_trang_chu', [
             'classes' => $classes,
-            'user' => Auth::user()
+            'user' => $user
         ]);
     }
-} 
+}
