@@ -60,6 +60,7 @@ Route::prefix('submissions')->group(function () {
     Route::get('/getById/{id}', [SubmissionController::class, 'show']);
     Route::put('/update/{id}', [SubmissionController::class, 'update']);
     Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
+    Route::get('/byteacher/{teacher_id}', [SubmissionController::class, 'getByTeacher']);
 });
 
 // API cho Student
@@ -190,7 +191,7 @@ Route::prefix('student')->group(function () {
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
 
-    // 🔽 Thêm CRUD Submission
+    // Thêm CRUD Submission
     Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
     Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
     Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
@@ -198,3 +199,5 @@ Route::prefix('student')->group(function () {
     Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
 });
 
+Route::get('/assignments-test', [AssignmentController::class, 'getAllAssignments']);
+Route::get('/exams-test', [AssignmentController::class, 'getAllExams']);

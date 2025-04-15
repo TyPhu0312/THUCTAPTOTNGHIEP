@@ -1,145 +1,71 @@
-<!-- @extends('layouts.app') -->
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card">
+            <!-- Phần Bài tập -->
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Chi tiết bài nộp</h4>
+                    <h4>Danh sách bài tập</h4>
                     <div>
-                        @if($submission->assignment_id)
-                            <a href="{{ route('submissions.index', ['type' => 'assignment', 'id' => $submission->assignment_id]) }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Quay lại danh sách
-                            </a>
-                        @else
-                            <a href="{{ route('submissions.index', ['type' => 'exam', 'id' => $submission->exam_id]) }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Quay lại danh sách
-                            </a>
-                        @endif
+                        <a href="/assignments/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Tạo bài tập mới
+                        </a>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5>Thông tin bài nộp</h5>
-                            <table class="table">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="assignments-table">
+                            <thead>
                                 <tr>
-                                    <th>Loại bài:</th>
-                                    <td>{{ $submission->assignment_id ? 'Bài tập' : 'Bài kiểm tra' }}</td>
+                                    <th>Mã bài tập</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Loại</th>
+                                    <th>Thời gian bắt đầu</th>
+                                    <th>Thời gian kết thúc</th>
+                                    <th>Trạng thái</th>
+                                    <th width="150">Thao tác</th>
                                 </tr>
-                                <tr>
-                                    <th>Tiêu đề:</th>
-                                    <td>
-                                        @if($submission->assignment_id)
-                                            {{ $submission->assignment->title ?? 'N/A' }}
-                                        @else
-                                            {{ $submission->exam->title ?? 'N/A' }}
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Học sinh:</th>
-                                    <td>{{ $submission->student->name }} ({{ $submission->student->student_id }})</td>
-                                </tr>
-                                <tr>
-                                    <th>Thời gian nộp:</th>
-                                    <td>{{ date('d/m/Y H:i:s', strtotime($submission->created_at)) }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Trạng thái:</th>
-                                    <td>
-                                        @if($submission->is_late)
-                                            <span class="badge bg-warning">Nộp muộn</span>
-                                        @else
-                                            <span class="badge bg-success">Đúng hạn</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Điểm tạm thời:</th>
-                                    <td>
-                                        @if($submission->temporary_score !== null)
-                                            {{ $submission->temporary_score }}
-                                        @else
-                                            <span class="text-muted">Chưa chấm</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Tập tin đính kèm</h5>
-                            @if($submission->answer_file)
-                                <div class="d-flex flex-column align-items-center">
-                                    <div class="file-icon mb-3">
-                                        <i class="fas fa-file-alt fa-5x"></i>
-                                    </div>
-                                    <a href="{{ Storage::url($submission->answer_file) }}" class="btn btn-primary" target="_blank">
-                                        <i class="fas fa-download"></i> Tải xuống
-                                    </a>
-                                </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    Không có tập tin đính kèm
-                                </div>
-                            @endif
-                        </div>
+                            </thead>
+                            <tbody>
+                                <!-- Dữ liệu bài tập sẽ được thêm vào đây bằng JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+            </div>
 
-                    @if($submission->answers && count($submission->answers) > 0)
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <h5>Các câu trả lời</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Câu hỏi</th>
-                                                <th>Câu trả lời</th>
-                                                <th>Điểm</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($submission->answers as $answer)
-                                                <tr>
-                                                    <td>
-                                                        @if($answer->question)
-                                                            {!! $answer->question->content !!}
-                                                        @else
-                                                            <span class="text-muted">Câu hỏi không còn tồn tại</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>{!! $answer->content !!}</td>
-                                                    <td>
-                                                        @if($answer->score !== null)
-                                                            {{ $answer->score }}
-                                                        @else
-                                                            <span class="text-muted">Chưa chấm</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+            <!-- Phần Bài kiểm tra -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Danh sách bài kiểm tra</h4>
+                    <div>
+                        <a href="/exams/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Tạo bài kiểm tra mới
+                        </a>
+                    </div>
+                </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h5>Chấm điểm</h5>
-                            <form id="scoreForm">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="temporary_score" class="form-label">Điểm (0-100)</label>
-                                    <input type="number" class="form-control" id="temporary_score" name="temporary_score" min="0" max="100" value="{{ $submission->temporary_score }}">
-                                </div>
-                                <button type="button" class="btn btn-primary" onclick="updateScore('{{ $submission->id }}')">Lưu điểm</button>
-                            </form>
-                        </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="exams-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã bài kiểm tra</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Loại</th>
+                                    <th>Thời gian bắt đầu</th>
+                                    <th>Thời gian kết thúc</th>
+                                    <th>Trạng thái</th>
+                                    <th width="150">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dữ liệu bài kiểm tra sẽ được thêm vào đây bằng JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -148,30 +74,134 @@
 </div>
 
 <script>
-    function updateScore(id) {
-        const scoreForm = document.getElementById('scoreForm');
-        const formData = new FormData(scoreForm);
-        const score = formData.get('temporary_score');
-        
-        fetch(`/api/submissions/update/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                temporary_score: score
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lấy dữ liệu bài tập từ API
+        fetch('/api/assignments-test')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const assignmentsTable = document.querySelector('#assignments-table tbody');
+                    assignmentsTable.innerHTML = ''; // Xóa dữ liệu cũ
+                    
+                    data.data.forEach(assignment => {
+                        const row = document.createElement('tr');
+                        
+                        // Định dạng ngày giờ
+                        const startTime = new Date(assignment.start_time);
+                        const endTime = new Date(assignment.end_time);
+                        const formattedStartTime = `${startTime.getDate()}/${startTime.getMonth() + 1}/${startTime.getFullYear()} ${startTime.getHours()}:${String(startTime.getMinutes()).padStart(2, '0')}`;
+                        const formattedEndTime = `${endTime.getDate()}/${endTime.getMonth() + 1}/${endTime.getFullYear()} ${endTime.getHours()}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+                        
+                        // Tạo trạng thái với màu tương ứng
+                        let statusBadge = '';
+                        if (assignment.status === 'Completed') {
+                            statusBadge = '<span class="badge bg-success">Hoàn thành</span>';
+                        } else if (assignment.status === 'In Progress') {
+                            statusBadge = '<span class="badge bg-primary">Đang diễn ra</span>';
+                        } else {
+                            statusBadge = '<span class="badge bg-secondary">Sắp diễn ra</span>';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${assignment.assignment_id}</td>
+                            <td>${assignment.title}</td>
+                            <td>${assignment.type}</td>
+                            <td>${formattedStartTime}</td>
+                            <td>${formattedEndTime}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/assignments/${assignment.assignment_id}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/assignments/${assignment.assignment_id}/edit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/submissions/index?type=assignment&id=${assignment.assignment_id}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-tasks"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        `;
+                        
+                        assignmentsTable.appendChild(row);
+                    });
+                } else {
+                    console.error('Không thể lấy dữ liệu bài tập');
+                }
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Cập nhật điểm thành công!');
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi cập nhật điểm');
-        });
-    }
+            .catch(error => {
+                console.error('Lỗi khi gọi API bài tập:', error);
+                document.querySelector('#assignments-table tbody').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</td>
+                    </tr>
+                `;
+            });
+        
+        // Lấy dữ liệu bài kiểm tra từ API
+        fetch('/api/exams-test')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const examsTable = document.querySelector('#exams-table tbody');
+                    examsTable.innerHTML = ''; // Xóa dữ liệu cũ
+                    
+                    data.data.forEach(exam => {
+                        const row = document.createElement('tr');
+                        
+                        // Định dạng ngày giờ
+                        const startTime = new Date(exam.start_time);
+                        const endTime = new Date(exam.end_time);
+                        const formattedStartTime = `${startTime.getDate()}/${startTime.getMonth() + 1}/${startTime.getFullYear()} ${startTime.getHours()}:${String(startTime.getMinutes()).padStart(2, '0')}`;
+                        const formattedEndTime = `${endTime.getDate()}/${endTime.getMonth() + 1}/${endTime.getFullYear()} ${endTime.getHours()}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+                        
+                        // Tạo trạng thái với màu tương ứng
+                        let statusBadge = '';
+                        if (exam.status === 'Completed') {
+                            statusBadge = '<span class="badge bg-success">Hoàn thành</span>';
+                        } else if (exam.status === 'In Progress') {
+                            statusBadge = '<span class="badge bg-primary">Đang diễn ra</span>';
+                        } else {
+                            statusBadge = '<span class="badge bg-secondary">Sắp diễn ra</span>';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${exam.exam_id}</td>
+                            <td>${exam.title}</td>
+                            <td>${exam.type}</td>
+                            <td>${formattedStartTime}</td>
+                            <td>${formattedEndTime}</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/exams/${exam.exam_id}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/exams/${exam.exam_id}/edit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/submissions/index?type=exam&id=${exam.exam_id}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-tasks"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        `;
+                        
+                        examsTable.appendChild(row);
+                    });
+                } else {
+                    console.error('Không thể lấy dữ liệu bài kiểm tra');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gọi API bài kiểm tra:', error);
+                document.querySelector('#exams-table tbody').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</td>
+                    </tr>
+                `;
+            });
+    });
 </script>
 @endsection

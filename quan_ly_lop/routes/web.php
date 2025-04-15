@@ -30,42 +30,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
 });
-
-Route::prefix('submissions')->group(function () {
-    // Danh sách bài nộp theo loại (assignment/exam) và ID
-    Route::get('/public-submissions/{type}/{id}', function($type, $id) {
-        if ($type === 'assignment') {
-            $item = App\Models\Assignment::findOrFail($id);
-            $submissions = App\Models\Submission::where('assignment_id', $id)
-                ->with('student')
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            $item = App\Models\Exam::findOrFail($id);
-            $submissions = App\Models\Submission::where('exam_id', $id)
-                ->with('student')
-                ->orderBy('created_at', 'desc')
-                ->get();
-        }
-        
-        return view('submissions.demo', compact('submissions', 'item', 'type'));
-    });
-    
-    // Chi tiết một bài nộp
-    Route::get('/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
-});
-
-// API Routes cho tương tác AJAX
-Route::prefix('api/submissions')->group(function () {
-    // Lưu bài nộp mới (POST)
-    Route::post('/store', [SubmissionController::class, 'store']);
-    
-    // Cập nhật điểm bài nộp (PUT)
-    Route::put('/update/{id}', [SubmissionController::class, 'update']);
-    
-    // Xóa bài nộp (DELETE)
-    Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
-});
+Route::get('/submission/show', [SubmissionController::class, 'show'])->name('submissions.show');
 
 // Routes yêu cầu đăng nhập
 Route::middleware('auth')->group(function () {
@@ -109,9 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
 
     // Submission routes
-    // Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
-    // Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
-    // Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
+    Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
 });
 Route::post('/api/list-questions', [ListQuestionController::class, 'storeFromWeb'])->middleware('web');
 Route::get('/submissions/list/{type}/{target_id}', [App\Http\Controllers\StudentAssignmentController::class, 'listSubmissions'])
