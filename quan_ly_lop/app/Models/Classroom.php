@@ -19,6 +19,7 @@ class Classroom extends Model
         'class_id',
         'course_id',  // Khóa phụ
         'lecturer_id', //khoá phụ
+        'student_classes',//khoá phụ
         'class_code',
         'class_description',
         'class_duration',
@@ -79,9 +80,5 @@ class Classroom extends Model
     public function lecturer()
     {
         return $this->belongsTo(Lecturer::class, 'lecturer_id');
-    }
-    public function studentClasses()
-    {
-        return $this->hasMany(StudentClass::class, 'class_id');
     }
 }

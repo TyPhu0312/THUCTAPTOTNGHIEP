@@ -17,7 +17,7 @@ use App\Http\Controllers\OptionsController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
-use Illuminate\Support\Collection;
+
 
 
 // Route công khai
@@ -25,8 +25,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Routes xác thực
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('Showlogin');
+    Route::post('/login', [LoginController::class, 'login']) -> name('login');
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
 });

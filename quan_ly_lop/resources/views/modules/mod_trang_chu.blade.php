@@ -18,10 +18,11 @@
                             </div>
                         </div>
                         <div class="col">
-                            <h4 class="mb-1">Xin chào, {{ Auth::user()->full_name }}</h4>
-                            <p class="text-light mb-0">
-                                <i class="fas fa-id-card me-2"></i>{{ Auth::user()->student_code }}
-                            </p>
+                        @if(Auth::guard('students')->check())
+                            Xin chào sinh viên {{ Auth::guard('students')->user()->full_name }}
+                        @elseif(Auth::guard('lecturer')->check())
+                            Xin chào giảng viên {{ Auth::guard('lecturer')->user()->fullname }}
+                        @endif
                         </div>
                     </div>
                 </div>
@@ -65,7 +66,7 @@
                 <h2 class="welcome-title mb-3">Chào mừng đến với hệ thống quản lý lớp học</h2>
                 <p class="welcome-text mb-4">Đăng nhập để trải nghiệm đầy đủ các tính năng của hệ thống.</p>
                 <div class="welcome-buttons">
-                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg me-3">
+                    <a href="{{ route('Showlogin') }}" class="btn btn-primary btn-lg me-3">
                         <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
                     </a>
 <!--                     <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg">

@@ -14,6 +14,9 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('homeLoggedIn');
+        }
         return view('auth.login');
     }
     public function login(Request $request)
@@ -33,19 +36,16 @@ class LoginController extends Controller
                     ->withInput($request->except('password'))
                     ->withErrors(['school_email' => 'Email không tồn tại trong hệ thống.']);
             }
-
-            // Nếu là sinh viên
             if ($student) {
                 if (!Hash::check($request->password, $student->password)) {
                     return back()
                         ->withInput($request->except('password'))
                         ->withErrors(['password' => 'Mật khẩu không chính xác.']);
                 }
-                Auth::login($student, $request->filled('remember'));
+                Auth::guard('students')->login($student, $request->filled('remember'));
                 $request->session()->regenerate();
                 return redirect()->intended('/home')->with('success', 'Xin chào ' . $student->full_name . '!');
             }
-            // Nếu là giảng viên
             if ($lecturer) {
                 if (!Hash::check($request->password, $lecturer->password)) {
                     return back()
