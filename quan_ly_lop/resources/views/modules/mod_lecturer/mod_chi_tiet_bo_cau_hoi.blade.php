@@ -1,3 +1,4 @@
+@extends('templates.template_lecture')
 @section('main-content')
     <div class="container mt-4">
         <button type="button" class="btn btn-secondary mb-4" onclick="window.history.back()">Quay lại</button>
