@@ -28,6 +28,7 @@ class Assignment extends Model
         'end_time',
         'show_result',
         'status',
+        'created_by'
     ];
 
     protected $casts = [
@@ -67,5 +68,19 @@ class Assignment extends Model
     {
         return $this->belongsTo(Course::class, 'course_id'); // 'course_id' là tên cột khoá ngoại liên kết đến bảng 'course'
     }
-   
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function classes()
+    {
+        return $this->belongsToMany(ClassModel::class, 'assignment_class');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

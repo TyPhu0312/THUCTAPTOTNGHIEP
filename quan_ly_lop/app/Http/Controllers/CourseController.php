@@ -11,9 +11,17 @@ class CourseController extends Controller
     /**
      * Lấy danh sách tất cả khóa học
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Course::all(), Response::HTTP_OK);
+        $courses = Course::all();
+
+        // Nếu là request API, trả về JSON
+        if ($request->wantsJson()) {
+            return response()->json($courses, Response::HTTP_OK);
+        }
+
+        // Nếu là request từ trình duyệt, trả về view
+        return view('lecturerViews.question_bank', compact('courses'));
     }
 
     /**
@@ -27,7 +35,14 @@ class CourseController extends Controller
         }
         return response()->json($course, Response::HTTP_OK);
     }
-
+    public function showCourseOfStudent($student_id)
+    {
+        $course = Course::where('student_id', $student_id)->get();
+        if (!$course) {
+            return response()->json(['message' => 'Sinh viên này không tham giá khoá học nào!'], Response::HTTP_NOT_FOUND);
+        }
+        return response()->json($course, Response::HTTP_OK);
+    }
     /**
      * Thêm mới một khóa học
      */
@@ -49,18 +64,15 @@ class CourseController extends Controller
         return response()->json(['message' => 'Thêm khóa học thành công!', 'data' => $course], Response::HTTP_CREATED);
     }
 
-    /**
-     * Cập nhật thông tin khóa học
-     */
+
     public function update(Request $request, $id)
     {
         $course = Course::find($id);
         if (!$course) {
             return response()->json(['message' => 'Khóa học không tồn tại!'], Response::HTTP_NOT_FOUND);
         }
-
         $validatedData = $request->validate([
-            'course_name'    => 'string|max:255|unique:course,course_name,' . $id . ',course_id',
+            'course_name'    => 'string|max:255|unique:courses,course_name,' . $id . ',course_id',
             'process_ratio'  => 'numeric|min:0|max:100',
             'midterm_ratio'  => 'numeric|min:0|max:100',
             'final_ratio'    => 'numeric|min:0|max:100',

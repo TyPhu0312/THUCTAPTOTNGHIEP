@@ -6,6 +6,8 @@ use App\Models\Score;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Course;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ScoreNotification;
 
 class ScoresController extends Controller
 {
@@ -34,6 +36,20 @@ class ScoresController extends Controller
         }
         return response()->json($score);
     }
+
+
+      // Lấy bẳng điểm bằng student_id và coure_id
+      public function getScoresStudentByStudentIdAndCoureId($studentId, $courseId)
+      {
+          $score = Score::where('student_id', $studentId)
+                    ->where('course_id',$courseId)
+                    ->get();
+          if (!$score) {
+              return response()->json(['erro' => 'Không tìm thấy điểm số!'], 404);
+          }
+          return response()->json($score);
+      }
+
 
     // Tạo mới một điểm số
     public function store(Request $request)
@@ -75,6 +91,26 @@ class ScoresController extends Controller
         return response()->json($score, Response::HTTP_CREATED);
     }
 
+    public function testSendEmail(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+            'subject' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            // Gửi email
+            Mail::raw($validatedData['message'], function ($message) use ($validatedData) {
+                $message->to($validatedData['email'])
+                        ->subject($validatedData['subject']);
+            });
+
+            return response()->json(['message' => 'Email đã được gửi thành công.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Không thể gửi email. Lỗi: ' . $e->getMessage()]);
+        }
+    }
 
     // Cập nhật điểm số
     public function update(Request $request, $id)
@@ -120,6 +156,23 @@ class ScoresController extends Controller
                     ($finalScore * ($course->final_ratio / 100)),
                 2
             );
+            // Gửi email khi đã có điểm tổng
+            $studentEmail = $score->student->school_email;
+            $subject = 'Thông báo điểm của bạn';
+            $message = "Chào " . $score->student->full_name . ",\n\n";
+            $message .= "Điểm của bạn cho môn " . $score->course->course_name . " đã được cập nhật:\n\n";
+            $message .= "Điểm quá trình: " . $score->process_score . "\n";
+            $message .= "Điểm giữa kỳ: " . $score->midterm_score . "\n";
+            $message .= "Điểm cuối kỳ: " . $score->final_score . "\n";
+            $message .= "Điểm trung bình: " . $score->average_score . "\n\n";
+            $message .= "Cảm ơn bạn!";
+
+            // Gửi email thô
+            Mail::raw($message, function ($message) use ($studentEmail, $subject) {
+                $message->to($studentEmail)
+                        ->subject($subject);
+            });
+
         } else {
             // Nếu không đủ 3 điểm, để điểm trung bình là null hoặc giữ lại điểm cũ
             $validatedData['average_score'] = null; // Hoặc $score->average_score để giữ điểm cũ
@@ -127,6 +180,8 @@ class ScoresController extends Controller
 
         // Cập nhật điểm số
         $score->update($validatedData);
+
+
 
         return response()->json($score);
     }

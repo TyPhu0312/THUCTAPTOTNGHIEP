@@ -22,7 +22,7 @@ class Options extends Model
         'option_order',
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected static function boot()
     {

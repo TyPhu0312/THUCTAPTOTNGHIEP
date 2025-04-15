@@ -41,4 +41,9 @@ class Question extends Model
     {
         return $this->belongsTo(ListQuestion::class, 'list_question_id');
     }
+    public function options()
+    {
+        return $this->hasMany(Options::class, 'question_id');
+    }
+
 }

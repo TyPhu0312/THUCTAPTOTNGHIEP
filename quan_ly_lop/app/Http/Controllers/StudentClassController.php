@@ -30,7 +30,6 @@ class StudentClassController extends Controller
         $validatedData = $request->validate([
             'student_id' => 'required|string|exists:student,student_id',
             'class_id' => 'required|string|exists:classroom,class_id',
-            'enrolled_at' => 'required|date',
             'status' => 'required|string|in:Active,Drop,Pending',
             'final_score' => 'nullable|numeric|min:0|max:10',
         ]);
@@ -51,7 +50,6 @@ class StudentClassController extends Controller
         $validatedData = $request->validate([
             'student_id' => 'required|string|exists:student,student_id',
             'class_id' => 'required|string|exists:classroom,class_id',
-            'enrolled_at' => 'required|date',
             'status' => 'required|string|in:Active,Drop,Pending',
             'final_score' => 'nullable|numeric|min:0|max:10',
         ]);

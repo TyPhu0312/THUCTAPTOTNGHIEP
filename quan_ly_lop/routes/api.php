@@ -18,6 +18,7 @@ use App\Http\Controllers\SubListQuestionController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
+use App\Http\Controllers\ITCourseController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -68,6 +69,8 @@ Route::prefix('students')->group(function () {
     Route::get('/getById/{id}', [StudentController::class, 'show']);
     Route::put('/update/{id}', [StudentController::class, 'update']);
     Route::delete('/delete/{id}', [StudentController::class, 'destroy']);
+    Route::post('/import-students', [StudentController::class, 'importStudents']);
+    Route::post('/getScoresStudentByStudentIdAndCoureId/{studentId}/{courseId}', [StudentController::class, 'getScoresStudentByStudentIdAndCoureId']);
 });
 
 // API cho Course
@@ -75,6 +78,7 @@ Route::prefix('courses')->group(function () {
     Route::get('/', [CourseController::class, 'index']);
     Route::post('/create', [CourseController::class, 'store']);
     Route::get('/getById/{id}', [CourseController::class, 'show']);
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent']);
     Route::put('/update/{id}', [CourseController::class, 'update']);
     Route::delete('/delete/{id}', [CourseController::class, 'destroy']);
 });
@@ -91,10 +95,12 @@ Route::prefix('lecturers')->group(function () {
 // API cho ListQuestion
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
-    Route::post('/create', [ListQuestionController::class, 'store']);
+    Route::get('/detail/{list_question_id}', [ListQuestionController::class, 'showDetailQuestion']);
+    Route::post('/create', [ListQuestionController::class, 'storeFromWeb']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
+    Route::get('/getAllQuestion/{course_id}/{lecturer_id}', [ListQuestionController::class, 'getAllListQuestionsWithLecturer']);
 });
 
 // API cho Options
@@ -110,6 +116,7 @@ Route::prefix('options')->group(function () {
 Route::prefix('questions')->group(function () {
     Route::get('/', [QuestionController::class, 'index']);
     Route::post('/create', [QuestionController::class, 'store']);
+    Route::post('/batch', [QuestionController::class, 'storeBatch']);
     Route::get('/getById/{id}', [QuestionController::class, 'show']);
     Route::put('/update/{id}', [QuestionController::class, 'update']);
     Route::delete('/delete/{id}', [QuestionController::class, 'destroy']);
@@ -154,11 +161,15 @@ Route::prefix('assignments')->group(function () {
 // API cho Classroom
 Route::prefix('classrooms')->group(function () {
     Route::get('/', [ClassroomController::class, 'index']);
+    Route::get('/search', [ClassroomController::class, 'search']);
+    Route::get('/filters', [ClassroomController::class, 'getFilters']);
     Route::post('/create', [ClassroomController::class, 'store']);
     Route::get('/getById/{id}', [ClassroomController::class, 'show']);
     Route::put('/update/{id}', [ClassroomController::class, 'update']);
     Route::delete('/delete/{id}', [ClassroomController::class, 'destroy']);
+    Route::get('/student-classes/{student_code}', [ClassroomController::class, 'getStudentClasses']);
 });
+
 // Nhóm routes cho sinh viên
 Route::prefix('student')->group(function () {
     // Xem danh sách bài thi
@@ -181,4 +192,17 @@ Route::prefix('student')->group(function () {
 
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
+
+    // 🔽 Thêm CRUD Submission
+    Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
+    Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
+    Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
+    Route::put('/submissions/{id}', [StudentAssignmentController::class, 'updateSubmission']);
+    Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
 });
+Route::prefix('it-courses')->group(function () {
+    Route::get('/', [ITCourseController::class, 'index']);
+    Route::get('/search', [ITCourseController::class, 'search']);
+    Route::get('/{id}/books', [ITCourseController::class, 'getRecommendedBooks']);
+});
+

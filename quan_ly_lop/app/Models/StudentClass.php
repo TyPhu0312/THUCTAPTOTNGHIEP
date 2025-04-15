@@ -18,11 +18,10 @@ class StudentClass extends Model
         'student_class_id',
         'student_id',//Khoá phụ
         'class_id',// khoá phụ
-        'enrolled_at',
         'status',
         'final_score',
     ];
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected static function boot()
     {
