@@ -30,8 +30,24 @@ class QuestionController extends Controller
         if (!$question) {
             return response()->json(['message' => 'Không tìm thấy câu hỏi!'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($question);
+
+        // Giả sử các đáp án được lưu trong bảng 'options' với mối quan hệ 'hasMany'
+        $options = $question->options; // Nếu bảng 'options' có mối quan hệ với bảng 'question'
+
+        // Tạo mảng các đáp án
+        $optionArray = $options->pluck('option_text')->toArray();
+
+        return response()->json([
+            'question_id' => $question->question_id,
+            'list_question_id' => $question->list_question_id,
+            'title' => $question->title,
+            'content' => $question->content,
+            'type' => $question->type,
+            'correct_answer' => $question->correct_answer,
+            'options' => $optionArray, // Đưa options vào response
+        ]);
     }
+
 
     // Tạo mới một câu hỏi
     public function store(Request $request)
@@ -137,15 +153,32 @@ class QuestionController extends Controller
 
         // Xác thực dữ liệu
         $validatedData = $request->validate([
-            'list_question_id' => 'required|string|exists:list_question,list_question_id', // Kiểm tra sự tồn tại của list_question_id
+            'list_question_id' => 'required|string|exists:list_question,list_question_id',
             'title' => 'required|string',
             'content' => 'required|string',
             'type' => 'required|string|in:Trắc nghiệm,Tự luận',
-            'correct_answer' => 'nullable|string', // Cập nhật đáp án nếu cần
+            'correct_answer' => 'nullable|string',
+            'options' => 'array', // Kiểm tra mảng đáp án
         ]);
+
+        // Cập nhật câu hỏi
         $question->update($validatedData);
+
+        // Cập nhật options nếu cần
+        if (isset($validatedData['options'])) {
+            // Giả sử bạn có mối quan hệ với bảng 'options'
+            foreach ($validatedData['options'] as $index => $optionText) {
+                // Cập nhật từng đáp án
+                $question->options()->updateOrCreate(
+                    ['option_text' => $optionText],
+                    ['question_id' => $question->question_id]
+                );
+            }
+        }
+
         return response()->json($question);
     }
+
 
 
     // Xóa một câu hỏi

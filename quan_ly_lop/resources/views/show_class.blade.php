@@ -1,5 +1,5 @@
 @extends('templates.template_normal')
 
 @section('main-content')
-    @include('modules.mod_hoan_thanh')
+    @include('modules.mod_show_class')
 @endsection

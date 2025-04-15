@@ -43,7 +43,7 @@ class LecturerController extends Controller
         ]);
 
         $validatedData['password'] = Hash::make($validatedData['password']);
-
+        
         $lecturer = Lecturer::create($validatedData);
         return response()->json(['message' => 'Thêm giảng viên thành công!', 'data' => $lecturer], Response::HTTP_CREATED);
     }
