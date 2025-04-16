@@ -18,6 +18,7 @@ use App\Http\Controllers\SubListQuestionController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
+use App\Http\Controllers\LecturerAssignmentController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -54,7 +55,6 @@ Route::prefix('answer')->group(function () {
 
 // API cho Submission
 Route::prefix('submissions')->group(function () {
-    Route::get('/public-submissions/{type}/{id}', [SubmissionController::class, 'publicIndex']);
     Route::get('/', [SubmissionController::class, 'index']);
     Route::post('/create', [SubmissionController::class, 'store']);
     Route::get('/getById/{id}', [SubmissionController::class, 'show']);
@@ -198,6 +198,30 @@ Route::prefix('student')->group(function () {
     Route::put('/submissions/{id}', [StudentAssignmentController::class, 'updateSubmission']);
     Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
 });
+// Các route không cần đăng nhập (có thể truyền lecturer_id qua tham số)
+// /api/lecturer-student/assignments?lecturer_id=LEC001
+// /api/lecturer-student/exams?lecturer_id=LEC001&type=Trắc nghiệm
+Route::prefix('lecturer-student')->group(function () {
+     // Lấy chi tiết bài tập theo giảng viên
+     Route::get('/assignment/{lecturer_id}', [LecturerAssignmentController::class, 'getAssignments']);
+    
+     // Lấy chi tiết bài kiểm tra theo giảng viên
+     Route::get('/exam/{lecturer_id}', [LecturerAssignmentController::class, 'getExams']);
+     
+    // Lấy danh sách bài tập
+    Route::get('/assignments', [LecturerAssignmentController::class, 'getAssignments']);
+    
+    // Lấy danh sách bài kiểm tra
+    Route::get('/exams', [LecturerAssignmentController::class, 'getExams']);
+    
+    // Lấy tất cả bài tập và bài kiểm tra theo khóa học
+    Route::get('/all-by-course', [LecturerAssignmentController::class, 'getAllAssignmentsAndExamsByCourse']);
+    
+    // Lấy thống kê nộp bài
+    Route::get('/submission-stats', [LecturerAssignmentController::class, 'getSubmissionStats']);
+
+});
+
 
 Route::get('/assignments-test', [AssignmentController::class, 'getAllAssignments']);
 Route::get('/exams-test', [AssignmentController::class, 'getAllExams']);

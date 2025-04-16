@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Models\ClassModel;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -128,11 +129,21 @@ class AssignmentController extends Controller
     {
         try {
             $assignments = DB::table('assignment')
-                ->select('assignment_id', 'sub_list_id', 'title', 'content', 'type', 
-                         'isSimultaneous', 'start_time', 'end_time', 'show_result', 
-                         'status', 'created_at')
+                ->select(
+                    'assignment_id',
+                    'sub_list_id',
+                    'title',
+                    'content',
+                    'type',
+                    'isSimultaneous',
+                    'start_time',
+                    'end_time',
+                    'show_result',
+                    'status',
+                    'created_at'
+                )
                 ->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $assignments,
@@ -156,11 +167,20 @@ class AssignmentController extends Controller
     {
         try {
             $exams = DB::table('exam')
-                ->select('exam_id', 'sub_list_id', 'title', 'content', 'type',
-                         'isSimultaneous', 'start_time', 'end_time', 
-                         'status', 'created_at')
+                ->select(
+                    'exam_id',
+                    'sub_list_id',
+                    'title',
+                    'content',
+                    'type',
+                    'isSimultaneous',
+                    'start_time',
+                    'end_time',
+                    'status',
+                    'created_at'
+                )
                 ->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $exams,
@@ -173,5 +193,85 @@ class AssignmentController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+    /**
+     * Lấy chi tiết bài tập kèm các câu hỏi và tùy chọn trả lời
+     */
+    public function getAssignmentDetail($assignmentId)
+    {
+        // Tìm thông tin chính của bài tập
+        $assignment = DB::table('assignment')
+            ->where('assignment_id', $assignmentId)
+            ->first();
+
+        if (!$assignment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bài tập'
+            ], 404);
+        }
+
+        // Lấy danh sách câu hỏi và tùy chọn
+        $questions = DB::table('assignment')
+            ->select([
+                'assignment.assignment_id',
+                'assignment.title AS assignment_title',
+                'assignment.content AS assignment_content',
+                'assignment.type AS assignment_type',
+                'question.question_id',
+                'question.title AS question_title',
+                'question.content AS question_content',
+                'question.type AS question_type',
+                'question.correct_answer',
+                'options.option_id',
+                'options.option_text',
+                'options.is_correct',
+                'options.option_order'
+            ])
+            ->join('sub_list', 'assignment.sub_list_id', '=', 'sub_list.sub_list_id')
+            ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
+            ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
+            ->leftJoin('options', 'question.question_id', '=', 'options.question_id')
+            ->where('assignment.assignment_id', $assignmentId)
+            ->get();
+
+        // Lấy số lượng bài nộp và danh sách bài nộp
+        $submissionCount = DB::table('submission')
+            ->where('assignment_id', $assignmentId)
+            ->count();
+
+        $submissions = DB::table('submission')
+            ->select([
+                'submission.submission_id',
+                'submission.student_id',
+                'submission.answer_file',
+                'submission.created_at',
+                'submission.is_late',
+                'submission.temporary_score',
+                'student.full_name AS student_name',
+                'student.student_code'
+            ])
+            ->join('student', 'submission.student_id', '=', 'student.student_id')
+            ->where('submission.assignment_id', $assignmentId)
+            ->get();
+
+        // Lấy câu trả lời cho mỗi bài nộp
+        foreach ($submissions as $key => $submission) {
+            $answers = DB::table('answer')
+                ->where('submission_id', $submission->submission_id)
+                ->get();
+
+            $submissions[$key]->answers = $answers;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'assignment' => $assignment,
+                'questions' => $questions,
+                'submission_count' => $submissionCount,
+                'submissions' => $submissions
+            ]
+        ]);
     }
 }

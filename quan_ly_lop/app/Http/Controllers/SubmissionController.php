@@ -112,22 +112,4 @@ class SubmissionController extends Controller
 
         return response()->json(['message' => 'Bài nộp đã được xóa!'], Response::HTTP_OK);
     }
-    public function publicIndex(Request $request, $type, $id)
-    {
-        if ($type === 'assignment') {
-            $item = Assignment::findOrFail($id);
-            $submissions = Submission::where('assignment_id', $id)
-                ->with('student')
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            $item = Exam::findOrFail($id);
-            $submissions = Submission::where('exam_id', $id)
-                ->with('student')
-                ->orderBy('created_at', 'desc')
-                ->get();
-        }
-
-        return view('submissions.demo', compact('submissions', 'item', 'type'));
-    }
 }

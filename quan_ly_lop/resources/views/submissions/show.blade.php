@@ -4,68 +4,125 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <!-- Phần Bài tập -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Danh sách bài tập</h4>
-                    <div>
-                        <a href="/assignments/create" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Tạo bài tập mới
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="assignments-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã bài tập</th>
-                                    <th>Tiêu đề</th>
-                                    <th>Loại</th>
-                                    <th>Thời gian bắt đầu</th>
-                                    <th>Thời gian kết thúc</th>
-                                    <th>Trạng thái</th>
-                                    <th width="150">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dữ liệu bài tập sẽ được thêm vào đây bằng JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Dashboard Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0"><i class="fas fa-book-open me-2"></i>Quản lý học tập</h2>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="createButtonDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-plus me-1"></i> Tạo mới
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="createButtonDropdown">
+                        <li><a class="dropdown-item" href="/assignments/create"><i class="fas fa-file-alt me-2"></i>Tạo bài tập mới</a></li>
+                        <li><a class="dropdown-item" href="/exams/create"><i class="fas fa-clipboard-check me-2"></i>Tạo bài kiểm tra mới</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Phần Bài kiểm tra -->
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Danh sách bài kiểm tra</h4>
-                    <div>
-                        <a href="/exams/create" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Tạo bài kiểm tra mới
-                        </a>
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab" aria-controls="assignments" aria-selected="true">
+                        <i class="fas fa-file-alt me-2"></i>Bài tập
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams" type="button" role="tab" aria-controls="exams" aria-selected="false">
+                        <i class="fas fa-clipboard-check me-2"></i>Bài kiểm tra
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="myTabContent">
+                <!-- Phần Bài tập -->
+                <div class="tab-pane fade show active" id="assignments" role="tabpanel" aria-labelledby="assignments-tab">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                            <h5 class="mb-0">Danh sách bài tập</h5>
+                            <a href="/assignments/create" class="btn btn-sm btn-primary">
+                                <i class="fas fa-plus me-1"></i> Tạo bài tập mới
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="assignments-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã bài tập</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Loại</th>
+                                            <th>Thời gian bắt đầu</th>
+                                            <th>Thời gian kết thúc</th>
+                                            <th>Trạng thái</th>
+                                            <th width="150">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Đang tải...</span>
+                                                </div>
+                                                <p class="mt-2 mb-0">Đang tải dữ liệu...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="assignments-empty" class="text-center py-4 d-none">
+                                <i class="fas fa-file-alt fa-3x text-muted"></i>
+                                <p class="mt-3 mb-0">Chưa có bài tập nào. Hãy tạo bài tập mới!</p>
+                                <a href="/assignments/create" class="btn btn-sm btn-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Tạo bài tập mới
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="exams-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã bài kiểm tra</th>
-                                    <th>Tiêu đề</th>
-                                    <th>Loại</th>
-                                    <th>Thời gian bắt đầu</th>
-                                    <th>Thời gian kết thúc</th>
-                                    <th>Trạng thái</th>
-                                    <th width="150">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dữ liệu bài kiểm tra sẽ được thêm vào đây bằng JavaScript -->
-                            </tbody>
-                        </table>
+                <!-- Phần Bài kiểm tra -->
+                <div class="tab-pane fade" id="exams" role="tabpanel" aria-labelledby="exams-tab">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                            <h5 class="mb-0">Danh sách bài kiểm tra</h5>
+                            <a href="/exams/create" class="btn btn-sm btn-primary">
+                                <i class="fas fa-plus me-1"></i> Tạo bài kiểm tra mới
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="exams-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã bài kiểm tra</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Loại</th>
+                                            <th>Thời gian bắt đầu</th>
+                                            <th>Thời gian kết thúc</th>
+                                            <th>Trạng thái</th>
+                                            <th width="150">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Đang tải...</span>
+                                                </div>
+                                                <p class="mt-2 mb-0">Đang tải dữ liệu...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="exams-empty" class="text-center py-4 d-none">
+                                <i class="fas fa-clipboard-check fa-3x text-muted"></i>
+                                <p class="mt-3 mb-0">Chưa có bài kiểm tra nào. Hãy tạo bài kiểm tra mới!</p>
+                                <a href="/exams/create" class="btn btn-sm btn-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Tạo bài kiểm tra mới
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,135 +130,443 @@
     </div>
 </div>
 
+<!-- Thêm CSS tùy chỉnh -->
+<style>
+    .card {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+        border-radius: 30px;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.25rem;
+        margin-right: 0.25rem;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    .btn-primary {
+        background-color: #3490dc;
+        border-color: #3490dc;
+    }
+
+    .btn-primary:hover {
+        background-color: #2779bd;
+        border-color: #2779bd;
+    }
+
+    .btn-info {
+        background-color: #6cb2eb;
+        border-color: #6cb2eb;
+        color: #fff;
+    }
+
+    .btn-info:hover {
+        background-color: #4aa0e6;
+        border-color: #4aa0e6;
+        color: #fff;
+    }
+
+    .btn-warning {
+        background-color: #ffed4a;
+        border-color: #ffed4a;
+        color: #333;
+    }
+
+    .btn-warning:hover {
+        background-color: #ffe924;
+        border-color: #ffe924;
+        color: #333;
+    }
+
+    .bg-success {
+        background-color: #38c172 !important;
+    }
+
+    .bg-primary {
+        background-color: #3490dc !important;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d !important;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border: none;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #3490dc;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #3490dc;
+        background-color: transparent;
+        border-bottom: 3px solid #3490dc;
+    }
+
+    .dropdown-menu {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
 <script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // Định dạng ngày giờ
+    //     function formatDateTime(dateTimeStr) {
+    //         const dt = new Date(dateTimeStr);
+    //         const day = String(dt.getDate()).padStart(2, '0');
+    //         const month = String(dt.getMonth() + 1).padStart(2, '0');
+    //         const year = dt.getFullYear();
+    //         const hours = String(dt.getHours()).padStart(2, '0');
+    //         const minutes = String(dt.getMinutes()).padStart(2, '0');
+
+    //         return `${day}/${month}/${year} ${hours}:${minutes}`;
+    //     }
+
+    //     // Tạo nội dung trạng thái
+    //     function createStatusBadge(status) {
+    //         let badgeClass = '';
+    //         let statusText = '';
+
+    //         if (status === 'Completed') {
+    //             badgeClass = 'bg-success';
+    //             statusText = 'Hoàn thành';
+    //         } else if (status === 'In Progress') {
+    //             badgeClass = 'bg-primary';
+    //             statusText = 'Đang diễn ra';
+    //         } else {
+    //             badgeClass = 'bg-secondary';
+    //             statusText = 'Sắp diễn ra';
+    //         }
+
+    //         return `<span class="badge ${badgeClass}">${statusText}</span>`;
+    //     }
+
+    //     // Tạo nút thao tác
+    //     function createActionButtons(type, id) {
+    //         return `
+    //             <div class="btn-group" role="group">
+    //                 <a href="/${type}s/${id}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
+    //                     <i class="fas fa-eye"></i>
+    //                 </a>
+    //                 <a href="/${type}s/${id}/edit" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
+    //                     <i class="fas fa-edit"></i>
+    //                 </a>
+    //                 <a href="/submissions/index?type=${type}&id=${id}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Xem bài nộp">
+    //                     <i class="fas fa-tasks"></i>
+    //                 </a>
+    //             </div>
+    //         `;
+    //     }
+
+    //     // Lấy dữ liệu bài tập từ API
+    //     fetch('/api/assignments-test')
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const assignmentsTable = document.querySelector('#assignments-table tbody');
+
+    //             if (data.success && data.data && data.data.length > 0) {
+    //                 assignmentsTable.innerHTML = ''; // Xóa dữ liệu cũ
+
+    //                 data.data.forEach(assignment => {
+    //                     const row = document.createElement('tr');
+
+    //                     row.innerHTML = `
+    //                         <td><span class="fw-bold">${assignment.assignment_id}</span></td>
+    //                         <td>${assignment.title}</td>
+    //                         <td><span class="badge bg-light text-dark">${assignment.type}</span></td>
+    //                         <td>${formatDateTime(assignment.start_time)}</td>
+    //                         <td>${formatDateTime(assignment.end_time)}</td>
+    //                         <td>${createStatusBadge(assignment.status)}</td>
+    //                         <td>${createActionButtons('assignment', assignment.assignment_id)}</td>
+    //                     `;
+
+    //                     assignmentsTable.appendChild(row);
+    //                 });
+
+    //                 // Khởi tạo tooltips
+    //                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //                 tooltipTriggerList.map(function(tooltipTriggerEl) {
+    //                     return new bootstrap.Tooltip(tooltipTriggerEl);
+    //                 });
+    //             } else {
+    //                 // Hiển thị thông báo nếu không có dữ liệu
+    //                 document.querySelector('#assignments-empty').classList.remove('d-none');
+    //                 assignmentsTable.innerHTML = '';
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Lỗi khi gọi API bài tập:', error);
+    //             document.querySelector('#assignments-table tbody').innerHTML = `
+    //                 <tr>
+    //                     <td colspan="7" class="text-center py-4">
+    //                         <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+    //                         <p class="mb-0">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</p>
+    //                         <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+    //                             <i class="fas fa-sync-alt me-1"></i> Tải lại
+    //                         </button>
+    //                     </td>
+    //                 </tr>
+    //             `;
+    //         });
+
+    //     // Lấy dữ liệu bài kiểm tra từ API
+    //     fetch('/api/exams-test')
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const examsTable = document.querySelector('#exams-table tbody');
+
+    //             if (data.success && data.data && data.data.length > 0) {
+    //                 examsTable.innerHTML = ''; // Xóa dữ liệu cũ
+
+    //                 data.data.forEach(exam => {
+    //                     const row = document.createElement('tr');
+
+    //                     row.innerHTML = `
+    //                         <td><span class="fw-bold">${exam.exam_id}</span></td>
+    //                         <td>${exam.title}</td>
+    //                         <td><span class="badge bg-light text-dark">${exam.type}</span></td>
+    //                         <td>${formatDateTime(exam.start_time)}</td>
+    //                         <td>${formatDateTime(exam.end_time)}</td>
+    //                         <td>${createStatusBadge(exam.status)}</td>
+    //                         <td>${createActionButtons('exam', exam.exam_id)}</td>
+    //                     `;
+
+    //                     examsTable.appendChild(row);
+    //                 });
+
+    //                 // Khởi tạo tooltips
+    //                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //                 tooltipTriggerList.map(function(tooltipTriggerEl) {
+    //                     return new bootstrap.Tooltip(tooltipTriggerEl);
+    //                 });
+    //             } else {
+    //                 // Hiển thị thông báo nếu không có dữ liệu
+    //                 document.querySelector('#exams-empty').classList.remove('d-none');
+    //                 examsTable.innerHTML = '';
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Lỗi khi gọi API bài kiểm tra:', error);
+    //             document.querySelector('#exams-table tbody').innerHTML = `
+    //                 <tr>
+    //                     <td colspan="7" class="text-center py-4">
+    //                         <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+    //                         <p class="mb-0">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</p>
+    //                         <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+    //                             <i class="fas fa-sync-alt me-1"></i> Tải lại
+    //                         </button>
+    //                     </td>
+    //                 </tr>
+    //             `;
+    //         });
+
+    //     // Hiển thị tab được chọn dựa trên URL hash nếu có
+    //     const hash = window.location.hash;
+    //     if (hash) {
+    //         const tab = document.querySelector(`a[href="${hash}"]`);
+    //         if (tab) {
+    //             tab.click();
+    //         }
+    //     }
+    // });
+    //#2779bd
     document.addEventListener('DOMContentLoaded', function() {
+        // Định dạng ngày giờ
+        function formatDateTime(dateTimeStr) {
+            const dt = new Date(dateTimeStr);
+            const day = String(dt.getDate()).padStart(2, '0');
+            const month = String(dt.getMonth() + 1).padStart(2, '0');
+            const year = dt.getFullYear();
+            const hours = String(dt.getHours()).padStart(2, '0');
+            const minutes = String(dt.getMinutes()).padStart(2, '0');
+
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        // Tạo nội dung trạng thái
+        function createStatusBadge(status) {
+            let badgeClass = '';
+            let statusText = '';
+
+            if (status === 'Completed') {
+                badgeClass = 'bg-success';
+                statusText = 'Hoàn thành';
+            } else if (status === 'Processing' || status === 'In Progress') {
+                badgeClass = 'bg-primary';
+                statusText = 'Đang diễn ra';
+            } else if (status === 'Pending') {
+                badgeClass = 'bg-secondary';
+                statusText = 'Sắp diễn ra';
+            } else {
+                badgeClass = 'bg-secondary';
+                statusText = status;
+            }
+
+            return `<span class="badge ${badgeClass}">${statusText}</span>`;
+        }
+
+        // Tạo nút thao tác
+        function createActionButtons(type, id) {
+            return `
+            <div class="btn-group" role="group">
+                <a href="/${type}s/${id}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="/${type}s/${id}/edit" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="/submissions/index?type=${type}&id=${id}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Xem bài nộp">
+                    <i class="fas fa-tasks"></i>
+                </a>
+            </div>
+        `;
+        }
+
+        const lecturerId = 'LC001'; // Mã giảng viên cố định cho việc bỏ qua đăng nhập
+
         // Lấy dữ liệu bài tập từ API
-        fetch('/api/assignments-test')
+        fetch(`/api/lecturer-student/assignments?lecturer_id=${lecturerId}`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    const assignmentsTable = document.querySelector('#assignments-table tbody');
+                const assignmentsTable = document.querySelector('#assignments-table tbody');
+
+                if (data.success && data.data && Array.isArray(data.data)) {
                     assignmentsTable.innerHTML = ''; // Xóa dữ liệu cũ
-                    
+
                     data.data.forEach(assignment => {
                         const row = document.createElement('tr');
-                        
-                        // Định dạng ngày giờ
-                        const startTime = new Date(assignment.start_time);
-                        const endTime = new Date(assignment.end_time);
-                        const formattedStartTime = `${startTime.getDate()}/${startTime.getMonth() + 1}/${startTime.getFullYear()} ${startTime.getHours()}:${String(startTime.getMinutes()).padStart(2, '0')}`;
-                        const formattedEndTime = `${endTime.getDate()}/${endTime.getMonth() + 1}/${endTime.getFullYear()} ${endTime.getHours()}:${String(endTime.getMinutes()).padStart(2, '0')}`;
-                        
-                        // Tạo trạng thái với màu tương ứng
-                        let statusBadge = '';
-                        if (assignment.status === 'Completed') {
-                            statusBadge = '<span class="badge bg-success">Hoàn thành</span>';
-                        } else if (assignment.status === 'In Progress') {
-                            statusBadge = '<span class="badge bg-primary">Đang diễn ra</span>';
-                        } else {
-                            statusBadge = '<span class="badge bg-secondary">Sắp diễn ra</span>';
-                        }
-                        
+
                         row.innerHTML = `
-                            <td>${assignment.assignment_id}</td>
-                            <td>${assignment.title}</td>
-                            <td>${assignment.type}</td>
-                            <td>${formattedStartTime}</td>
-                            <td>${formattedEndTime}</td>
-                            <td>${statusBadge}</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="/assignments/${assignment.assignment_id}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="/assignments/${assignment.assignment_id}/edit" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="/submissions/index?type=assignment&id=${assignment.assignment_id}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-tasks"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        `;
-                        
+                        <td><span class="fw-bold">${assignment.assignment_id}</span></td>
+                        <td>${assignment.title}</td>
+                        <td><span class="badge bg-light text-dark">${assignment.type}</span></td>
+                        <td>${formatDateTime(assignment.start_time)}</td>
+                        <td>${formatDateTime(assignment.end_time)}</td>
+                        <td>${createStatusBadge(assignment.status)}</td>
+                        <td>${createActionButtons('assignment', assignment.assignment_id)}</td>
+                    `;
+
                         assignmentsTable.appendChild(row);
                     });
+
+                    // Khởi tạo tooltips
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.map(function(tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
                 } else {
-                    console.error('Không thể lấy dữ liệu bài tập');
+                    // Hiển thị thông báo nếu không có dữ liệu
+                    document.querySelector('#assignments-empty').classList.remove('d-none');
+                    assignmentsTable.innerHTML = '';
                 }
             })
             .catch(error => {
                 console.error('Lỗi khi gọi API bài tập:', error);
                 document.querySelector('#assignments-table tbody').innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</td>
-                    </tr>
-                `;
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+                        <p class="mb-0">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</p>
+                        <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-1"></i> Tải lại
+                        </button>
+                    </td>
+                </tr>
+            `;
             });
-        
+
         // Lấy dữ liệu bài kiểm tra từ API
-        fetch('/api/exams-test')
+        fetch(`/api/lecturer-student/exams?lecturer_id=${lecturerId}`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    const examsTable = document.querySelector('#exams-table tbody');
+                const examsTable = document.querySelector('#exams-table tbody');
+
+                if (data.success && data.data && Array.isArray(data.data)) {
                     examsTable.innerHTML = ''; // Xóa dữ liệu cũ
-                    
+
                     data.data.forEach(exam => {
                         const row = document.createElement('tr');
-                        
-                        // Định dạng ngày giờ
-                        const startTime = new Date(exam.start_time);
-                        const endTime = new Date(exam.end_time);
-                        const formattedStartTime = `${startTime.getDate()}/${startTime.getMonth() + 1}/${startTime.getFullYear()} ${startTime.getHours()}:${String(startTime.getMinutes()).padStart(2, '0')}`;
-                        const formattedEndTime = `${endTime.getDate()}/${endTime.getMonth() + 1}/${endTime.getFullYear()} ${endTime.getHours()}:${String(endTime.getMinutes()).padStart(2, '0')}`;
-                        
-                        // Tạo trạng thái với màu tương ứng
-                        let statusBadge = '';
-                        if (exam.status === 'Completed') {
-                            statusBadge = '<span class="badge bg-success">Hoàn thành</span>';
-                        } else if (exam.status === 'In Progress') {
-                            statusBadge = '<span class="badge bg-primary">Đang diễn ra</span>';
-                        } else {
-                            statusBadge = '<span class="badge bg-secondary">Sắp diễn ra</span>';
-                        }
-                        
+
                         row.innerHTML = `
-                            <td>${exam.exam_id}</td>
-                            <td>${exam.title}</td>
-                            <td>${exam.type}</td>
-                            <td>${formattedStartTime}</td>
-                            <td>${formattedEndTime}</td>
-                            <td>${statusBadge}</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="/exams/${exam.exam_id}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="/exams/${exam.exam_id}/edit" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="/submissions/index?type=exam&id=${exam.exam_id}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-tasks"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        `;
-                        
+                        <td><span class="fw-bold">${exam.exam_id}</span></td>
+                        <td>${exam.title}</td>
+                        <td><span class="badge bg-light text-dark">${exam.type}</span></td>
+                        <td>${formatDateTime(exam.start_time)}</td>
+                        <td>${formatDateTime(exam.end_time)}</td>
+                        <td>${createStatusBadge(exam.status)}</td>
+                        <td>${createActionButtons('exam', exam.exam_id)}</td>
+                    `;
+
                         examsTable.appendChild(row);
                     });
+
+                    // Khởi tạo tooltips
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.map(function(tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
                 } else {
-                    console.error('Không thể lấy dữ liệu bài kiểm tra');
+                    // Hiển thị thông báo nếu không có dữ liệu
+                    document.querySelector('#exams-empty').classList.remove('d-none');
+                    examsTable.innerHTML = '';
                 }
             })
             .catch(error => {
                 console.error('Lỗi khi gọi API bài kiểm tra:', error);
                 document.querySelector('#exams-table tbody').innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</td>
-                    </tr>
-                `;
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+                        <p class="mb-0">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</p>
+                        <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-1"></i> Tải lại
+                        </button>
+                    </td>
+                </tr>
+            `;
             });
+
+        // Hiển thị tab được chọn dựa trên URL hash nếu có
+        const hash = window.location.hash;
+        if (hash) {
+            const tab = document.querySelector(`a[href="${hash}"]`);
+            if (tab) {
+                tab.click();
+            }
+        }
     });
 </script>
 @endsection
