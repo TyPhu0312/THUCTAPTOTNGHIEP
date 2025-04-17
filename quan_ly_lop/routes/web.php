@@ -21,31 +21,10 @@ use App\Http\Controllers\StudentAssignmentController;
 
 // ========== ROUTE CÔNG KHAI ==========
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/public-demo', function () {
-    $submissions = collect([
-        (object) [
-            'submission_id' => '1',
-            'student' => (object) ['name' => 'Nguyễn Văn A', 'student_code' => 'SV001'],
-            'created_at' => '2025-04-10 14:30:00',
-            'file_path' => 'submissions/bai_nop_1.pdf',
-            'status' => 'submitted',
-            'temporary_score' => null
-        ],
-        (object) [
-            'submission_id' => '2',
-            'student' => (object) ['name' => 'Trần Thị B', 'student_code' => 'SV002'],
-            'created_at' => '2025-04-10 15:00:00',
-            'file_path' => 'submissions/bai_nop_2.pdf',
-            'status' => 'submitted',
-            'temporary_score' => 8.5
-        ],
-    ]);
-    $assignment = (object) ['assignment_id' => '123', 'title' => 'Bài tập cuối kỳ môn Lập trình Web'];
-    return view('submissions.demo', ['submissions' => $submissions, 'assignment' => $assignment, 'exam_id' => null]);
-});
 Route::get('/classDetail', function () {
     return view('show_class');
 });
+Route::get('/submission/show', [SubmissionController::class, 'show'])->name('submissions.show');
 Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 
 // ========== ROUTE CHO GUEST ==========
