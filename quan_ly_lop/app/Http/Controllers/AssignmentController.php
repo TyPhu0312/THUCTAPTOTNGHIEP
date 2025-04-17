@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Models\ClassModel;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentController extends Controller
 {
@@ -121,5 +123,102 @@ class AssignmentController extends Controller
         $assignment->delete();
         return redirect()->route('assignments.index')
             ->with('success', 'Assignment deleted successfully.');
+    }
+
+    public function getAllAssignments()
+    {
+        try {
+            $assignments = DB::table('assignment')
+                ->select(
+                    'assignment_id',
+                    'sub_list_id',
+                    'title',
+                    'content',
+                    'type',
+                    'isSimultaneous',
+                    'start_time',
+                    'end_time',
+                    'show_result',
+                    'status',
+                    'created_at'
+                )
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $assignments,
+                'message' => 'Đã lấy danh sách tất cả bài tập thành công'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy dữ liệu',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Lấy tất cả bài thi
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllExams()
+    {
+        try {
+            $exams = DB::table('exam')
+                ->select(
+                    'exam_id',
+                    'sub_list_id',
+                    'title',
+                    'content',
+                    'type',
+                    'isSimultaneous',
+                    'start_time',
+                    'end_time',
+                    'status',
+                    'created_at'
+                )
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $exams,
+                'message' => 'Đã lấy danh sách tất cả bài thi thành công'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy dữ liệu',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    /**
+     * Lấy chi tiết bài tập kèm các câu hỏi và tùy chọn trả lời
+     */
+    public function getAssignmentDetail($assignmentId)
+    {
+        // Tìm bài tập theo ID
+        $assignment = Assignment::with([
+            'subList.subListQuestions.question.options',
+        ])->findOrFail($assignmentId);
+
+        // Đếm số lượng bài nộp
+        $submissionCount = Submission::where('assignment_id', $assignmentId)->count();
+
+        // Lấy danh sách bài nộp kèm thông tin sinh viên và câu trả lời
+        $submissions = Submission::with('student', 'answers')
+            ->where('assignment_id', $assignmentId)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'assignment' => $assignment,
+                'submission_count' => $submissionCount,
+                'submissions' => $submissions
+            ]
+        ]);
     }
 }

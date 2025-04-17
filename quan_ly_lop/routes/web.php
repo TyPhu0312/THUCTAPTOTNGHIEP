@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LecturerDashboardController;
+use App\Http\Controllers\LecturerStudentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
@@ -53,6 +55,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
 });
+Route::get('/submission/show', [SubmissionController::class, 'show'])->name('submissions.show');
 
 // ========== ROUTE SAU KHI ĐĂNG NHẬP ==========
 Route::middleware('auth')->group(function () {
@@ -137,3 +140,9 @@ Route::middleware('auth:lecturer')->group(function () {
 
 // ========== ROUTE PHỤ: DÙNG NỘI BỘ ==========
 Route::get('/submissions/list/{type}/{target_id}', [StudentAssignmentController::class, 'listSubmissions'])->name('submissions.list');
+
+Route::prefix('lecturer')->group(function () {
+    Route::get('/dashboard', [LecturerDashboardController::class, 'index'])->name('lecturer.dashboard');
+    Route::get('/exams/{examId}', [LecturerDashboardController::class, 'examDetail'])->name('lecturer.exam.detail');
+    Route::get('/assignments/{assignmentId}', [LecturerDashboardController::class, 'assignmentDetail'])->name('lecturer.assignment.detail');
+});

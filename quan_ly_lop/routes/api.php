@@ -18,7 +18,6 @@ use App\Http\Controllers\SubListQuestionController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
-use App\Http\Controllers\ITCourseController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -60,6 +59,7 @@ Route::prefix('submissions')->group(function () {
     Route::get('/getById/{id}', [SubmissionController::class, 'show']);
     Route::put('/update/{id}', [SubmissionController::class, 'update']);
     Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
+    Route::get('/byteacher/{teacher_id}', [SubmissionController::class, 'getByTeacher']);
 });
 
 // API cho Student
@@ -194,16 +194,11 @@ Route::prefix('student')->group(function () {
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
 
-    // 🔽 Thêm CRUD Submission
+    // Thêm CRUD Submission
     Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
     Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
     Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
     Route::put('/submissions/{id}', [StudentAssignmentController::class, 'updateSubmission']);
     Route::delete('/submissions/{id}', [StudentAssignmentController::class, 'deleteSubmission']);
-});
-Route::prefix('it-courses')->group(function () {
-    Route::get('/', [ITCourseController::class, 'index']);
-    Route::get('/search', [ITCourseController::class, 'search']);
-    Route::get('/{id}/books', [ITCourseController::class, 'getRecommendedBooks']);
 });
 

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Exam;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
 
 class ExamController extends Controller
 {
@@ -52,7 +55,7 @@ class ExamController extends Controller
 
 
 
-    // 🟢 Cập nhật bài thi
+    //  Cập nhật bài thi
     public function update(Request $request, $id)
     {
         $exam = Exam::find($id);
@@ -68,7 +71,7 @@ class ExamController extends Controller
         ]);
     }
 
-    // 🟢 Xóa bài thi
+    //  Xóa bài thi
     public function destroy($id)
     {
         $exam = Exam::find($id);
@@ -79,5 +82,33 @@ class ExamController extends Controller
         $exam->delete();
 
         return response()->json(['message' => 'Bài thi đã bị xóa!']);
+    }
+
+    /**
+     * Lấy chi tiết bài kiểm tra kèm số lượng sinh viên đã nộp bài
+     */
+    public function getExamDetail($examId)
+    {
+        // Tìm bài kiểm tra theo ID
+        $exam = Exam::with([
+            'subList.subListQuestions.question.options',
+        ])->findOrFail($examId);
+
+        // Đếm số lượng bài nộp
+        $submissionCount = Submission::where('exam_id', $examId)->count();
+
+        // Lấy danh sách bài nộp kèm thông tin sinh viên và câu trả lời
+        $submissions = Submission::with('student', 'answers')
+            ->where('exam_id', $examId)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'exam' => $exam,
+                'submission_count' => $submissionCount,
+                'submissions' => $submissions
+            ]
+        ]);
     }
 }
