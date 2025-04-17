@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LecturerDashboardController;
+use App\Http\Controllers\LecturerStudentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
@@ -90,6 +92,7 @@ Route::get('/classDetail', function () {
 });
 Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 
+
 //lecturer
 Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
     return view('lecturerViews.chi_tiet_bo_cau_hoi', [
@@ -97,3 +100,9 @@ Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_q
     ]);
 })->name('viewListQuestionDetail');
 Route::get('/list-questions', [ListQuestionController::class, 'index']);
+
+Route::prefix('lecturer')->group(function () {
+    Route::get('/dashboard', [LecturerDashboardController::class, 'index'])->name('lecturer.dashboard');
+    Route::get('/exams/{examId}', [LecturerDashboardController::class, 'examDetail'])->name('lecturer.exam.detail');
+    Route::get('/assignments/{assignmentId}', [LecturerDashboardController::class, 'assignmentDetail'])->name('lecturer.assignment.detail');
+});

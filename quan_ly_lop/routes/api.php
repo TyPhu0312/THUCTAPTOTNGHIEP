@@ -202,25 +202,30 @@ Route::prefix('student')->group(function () {
 // /api/lecturer-student/assignments?lecturer_id=LEC001
 // /api/lecturer-student/exams?lecturer_id=LEC001&type=Trắc nghiệm
 Route::prefix('lecturer-student')->group(function () {
-     // Lấy chi tiết bài tập theo giảng viên
-     Route::get('/assignment/{lecturer_id}', [LecturerAssignmentController::class, 'getAssignments']);
-    
-     // Lấy chi tiết bài kiểm tra theo giảng viên
-     Route::get('/exam/{lecturer_id}', [LecturerAssignmentController::class, 'getExams']);
-     
-    // Lấy danh sách bài tập
+    //  // Lấy bài tập theo giảng viên
+    //  Route::get('/assignment/{lecturer_id}', [LecturerAssignmentController::class, 'getAssignments']);
+
+    //  // Lấy bài kiểm tra theo giảng viên
+    //  Route::get('/exam/{lecturer_id}', [LecturerAssignmentController::class, 'getExams']);
+
+    // Lấy danh sách bài tập theo giảng viên
     Route::get('/assignments', [LecturerAssignmentController::class, 'getAssignments']);
-    
-    // Lấy danh sách bài kiểm tra
+
+    // Lấy danh sách bài kiểm tra theo giảng viên
     Route::get('/exams', [LecturerAssignmentController::class, 'getExams']);
-    
+    // Lấy danh sách bài tập
+    Route::get('/exams/{examId}', [ExamController::class, 'getExamDetail']);
+
+    // Lấy danh sách bài kiểm tra
+    Route::get('/assignments/{assignmentId}', [AssignmentController::class, 'getAssignmentDetail']);
+
     // Lấy tất cả bài tập và bài kiểm tra theo khóa học
     Route::get('/all-by-course', [LecturerAssignmentController::class, 'getAllAssignmentsAndExamsByCourse']);
-    
+
     // Lấy thống kê nộp bài
     Route::get('/submission-stats', [LecturerAssignmentController::class, 'getSubmissionStats']);
-
 });
+
 
 
 Route::get('/assignments-test', [AssignmentController::class, 'getAllAssignments']);

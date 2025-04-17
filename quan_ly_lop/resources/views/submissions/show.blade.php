@@ -242,167 +242,6 @@
 </style>
 
 <script>
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     // Định dạng ngày giờ
-    //     function formatDateTime(dateTimeStr) {
-    //         const dt = new Date(dateTimeStr);
-    //         const day = String(dt.getDate()).padStart(2, '0');
-    //         const month = String(dt.getMonth() + 1).padStart(2, '0');
-    //         const year = dt.getFullYear();
-    //         const hours = String(dt.getHours()).padStart(2, '0');
-    //         const minutes = String(dt.getMinutes()).padStart(2, '0');
-
-    //         return `${day}/${month}/${year} ${hours}:${minutes}`;
-    //     }
-
-    //     // Tạo nội dung trạng thái
-    //     function createStatusBadge(status) {
-    //         let badgeClass = '';
-    //         let statusText = '';
-
-    //         if (status === 'Completed') {
-    //             badgeClass = 'bg-success';
-    //             statusText = 'Hoàn thành';
-    //         } else if (status === 'In Progress') {
-    //             badgeClass = 'bg-primary';
-    //             statusText = 'Đang diễn ra';
-    //         } else {
-    //             badgeClass = 'bg-secondary';
-    //             statusText = 'Sắp diễn ra';
-    //         }
-
-    //         return `<span class="badge ${badgeClass}">${statusText}</span>`;
-    //     }
-
-    //     // Tạo nút thao tác
-    //     function createActionButtons(type, id) {
-    //         return `
-    //             <div class="btn-group" role="group">
-    //                 <a href="/${type}s/${id}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
-    //                     <i class="fas fa-eye"></i>
-    //                 </a>
-    //                 <a href="/${type}s/${id}/edit" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
-    //                     <i class="fas fa-edit"></i>
-    //                 </a>
-    //                 <a href="/submissions/index?type=${type}&id=${id}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Xem bài nộp">
-    //                     <i class="fas fa-tasks"></i>
-    //                 </a>
-    //             </div>
-    //         `;
-    //     }
-
-    //     // Lấy dữ liệu bài tập từ API
-    //     fetch('/api/assignments-test')
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const assignmentsTable = document.querySelector('#assignments-table tbody');
-
-    //             if (data.success && data.data && data.data.length > 0) {
-    //                 assignmentsTable.innerHTML = ''; // Xóa dữ liệu cũ
-
-    //                 data.data.forEach(assignment => {
-    //                     const row = document.createElement('tr');
-
-    //                     row.innerHTML = `
-    //                         <td><span class="fw-bold">${assignment.assignment_id}</span></td>
-    //                         <td>${assignment.title}</td>
-    //                         <td><span class="badge bg-light text-dark">${assignment.type}</span></td>
-    //                         <td>${formatDateTime(assignment.start_time)}</td>
-    //                         <td>${formatDateTime(assignment.end_time)}</td>
-    //                         <td>${createStatusBadge(assignment.status)}</td>
-    //                         <td>${createActionButtons('assignment', assignment.assignment_id)}</td>
-    //                     `;
-
-    //                     assignmentsTable.appendChild(row);
-    //                 });
-
-    //                 // Khởi tạo tooltips
-    //                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    //                 tooltipTriggerList.map(function(tooltipTriggerEl) {
-    //                     return new bootstrap.Tooltip(tooltipTriggerEl);
-    //                 });
-    //             } else {
-    //                 // Hiển thị thông báo nếu không có dữ liệu
-    //                 document.querySelector('#assignments-empty').classList.remove('d-none');
-    //                 assignmentsTable.innerHTML = '';
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Lỗi khi gọi API bài tập:', error);
-    //             document.querySelector('#assignments-table tbody').innerHTML = `
-    //                 <tr>
-    //                     <td colspan="7" class="text-center py-4">
-    //                         <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
-    //                         <p class="mb-0">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</p>
-    //                         <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
-    //                             <i class="fas fa-sync-alt me-1"></i> Tải lại
-    //                         </button>
-    //                     </td>
-    //                 </tr>
-    //             `;
-    //         });
-
-    //     // Lấy dữ liệu bài kiểm tra từ API
-    //     fetch('/api/exams-test')
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const examsTable = document.querySelector('#exams-table tbody');
-
-    //             if (data.success && data.data && data.data.length > 0) {
-    //                 examsTable.innerHTML = ''; // Xóa dữ liệu cũ
-
-    //                 data.data.forEach(exam => {
-    //                     const row = document.createElement('tr');
-
-    //                     row.innerHTML = `
-    //                         <td><span class="fw-bold">${exam.exam_id}</span></td>
-    //                         <td>${exam.title}</td>
-    //                         <td><span class="badge bg-light text-dark">${exam.type}</span></td>
-    //                         <td>${formatDateTime(exam.start_time)}</td>
-    //                         <td>${formatDateTime(exam.end_time)}</td>
-    //                         <td>${createStatusBadge(exam.status)}</td>
-    //                         <td>${createActionButtons('exam', exam.exam_id)}</td>
-    //                     `;
-
-    //                     examsTable.appendChild(row);
-    //                 });
-
-    //                 // Khởi tạo tooltips
-    //                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    //                 tooltipTriggerList.map(function(tooltipTriggerEl) {
-    //                     return new bootstrap.Tooltip(tooltipTriggerEl);
-    //                 });
-    //             } else {
-    //                 // Hiển thị thông báo nếu không có dữ liệu
-    //                 document.querySelector('#exams-empty').classList.remove('d-none');
-    //                 examsTable.innerHTML = '';
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Lỗi khi gọi API bài kiểm tra:', error);
-    //             document.querySelector('#exams-table tbody').innerHTML = `
-    //                 <tr>
-    //                     <td colspan="7" class="text-center py-4">
-    //                         <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
-    //                         <p class="mb-0">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</p>
-    //                         <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
-    //                             <i class="fas fa-sync-alt me-1"></i> Tải lại
-    //                         </button>
-    //                     </td>
-    //                 </tr>
-    //             `;
-    //         });
-
-    //     // Hiển thị tab được chọn dựa trên URL hash nếu có
-    //     const hash = window.location.hash;
-    //     if (hash) {
-    //         const tab = document.querySelector(`a[href="${hash}"]`);
-    //         if (tab) {
-    //             tab.click();
-    //         }
-    //     }
-    // });
-    //#2779bd
     document.addEventListener('DOMContentLoaded', function() {
         // Định dạng ngày giờ
         function formatDateTime(dateTimeStr) {
@@ -438,125 +277,268 @@
             return `<span class="badge ${badgeClass}">${statusText}</span>`;
         }
 
-        // Tạo nút thao tác
+        // Định nghĩa các routes
+        const routes = {
+            assignment: {
+                view: (id) => `/lecturer/assignments/${id}`, // Sử dụng route named
+                edit: (id) => `/assignments/${id}/edit`,
+                submissions: (id) => `/submissions/index?type=assignment&id=${id}`
+            },
+            exam: {
+                view: (id) => `/lecturer/exams/${id}`, // Sử dụng route named
+                edit: (id) => `/exams/${id}/edit`,
+                submissions: (id) => `/submissions/index?type=exam&id=${id}`
+            }
+        };
+
+        // Tạo nút thao tác với routes động
         function createActionButtons(type, id) {
+            const typeKey = type === 'assignment' ? 'assignment' : 'exam';
+
             return `
-            <div class="btn-group" role="group">
-                <a href="/${type}s/${id}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
-                    <i class="fas fa-eye"></i>
-                </a>
-                <a href="/${type}s/${id}/edit" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
-                    <i class="fas fa-edit"></i>
-                </a>
-                <a href="/submissions/index?type=${type}&id=${id}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Xem bài nộp">
-                    <i class="fas fa-tasks"></i>
-                </a>
-            </div>
-        `;
+        <div class="btn-group" role="group">
+            <a href="${routes[typeKey].view(id)}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Xem chi tiết">
+                <i class="fas fa-eye"></i>
+            </a>
+            <a href="${routes[typeKey].edit(id)}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a href="${routes[typeKey].submissions(id)}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Xem bài nộp">
+                <i class="fas fa-tasks"></i>
+            </a>
+        </div>
+    `;
         }
 
-        const lecturerId = 'LC001'; // Mã giảng viên cố định cho việc bỏ qua đăng nhập
+        // Lấy ID của giảng viên hiện tại từ dữ liệu người dùng đăng nhập
+        function getCurrentLecturerId() {
+            // Cách 1: Nếu ID của giảng viên được truyền từ Laravel vào một biến JS
+            if (typeof window.authUser !== 'undefined' && window.authUser.lecturer_id) {
+                return window.authUser.lecturer_id;
+            }
+
+            // Cách 2: Nếu bạn đã đặt ID trong một phần tử HTML
+            const userIdElement = document.getElementById('auth_lecturer_id');
+            if (userIdElement && userIdElement.value) {
+                return userIdElement.value;
+            }
+
+            // Cách 3: Lấy từ meta tag
+            const metaLecturerId = document.querySelector('meta[name="lecturer-id"]');
+            if (metaLecturerId && metaLecturerId.content) {
+                return metaLecturerId.content;
+            }
+
+            // Cách 4: Nếu không tìm thấy ID, sử dụng ID mặc định cho testing
+            console.warn('Không tìm thấy ID giảng viên, đang sử dụng ID mặc định cho testing.');
+            return 'LC001';
+        }
+
+        // Lấy ID của giảng viên hiện tại
+        const lecturerId = getCurrentLecturerId();
+        console.log('Đang sử dụng ID giảng viên:', lecturerId);
+
+        // Lấy CSRF token từ meta tag
+        let csrfToken = '';
+        const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+        if (metaCsrf) {
+            csrfToken = metaCsrf.content;
+        } else {
+            console.warn('CSRF token không tìm thấy. API có thể không hoạt động.');
+        }
+
+        // Định nghĩa headers cơ bản
+        const headers = {
+            'Accept': 'application/json'
+        };
+
+        // Thêm CSRF token nếu có
+        if (csrfToken) {
+            headers['X-CSRF-TOKEN'] = csrfToken;
+        }
 
         // Lấy dữ liệu bài tập từ API
-        fetch(`/api/lecturer-student/assignments?lecturer_id=${lecturerId}`)
-            .then(response => response.json())
-            .then(data => {
-                const assignmentsTable = document.querySelector('#assignments-table tbody');
+        console.log(`Đang gọi API: /api/lecturer-student/assignments?lecturer_id=${lecturerId}`);
 
-                if (data.success && data.data && Array.isArray(data.data)) {
+        fetch(`/api/lecturer-student/assignments?lecturer_id=${lecturerId}`, {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('Phản hồi API bài tập:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dữ liệu bài tập nhận được:', data);
+                const assignmentsTable = document.querySelector('#assignments-table tbody');
+                if (!assignmentsTable) {
+                    console.error('Không tìm thấy bảng bài tập trong DOM');
+                    return;
+                }
+
+                // Xử lý dữ liệu bài tập
+                let assignments = [];
+                if (data.success && data.data) {
+                    if (data.data.data && Array.isArray(data.data.data)) {
+                        assignments = data.data.data;
+                    } else if (Array.isArray(data.data)) {
+                        assignments = data.data;
+                    }
+                }
+
+                if (assignments.length > 0) {
                     assignmentsTable.innerHTML = ''; // Xóa dữ liệu cũ
 
-                    data.data.forEach(assignment => {
+                    assignments.forEach(assignment => {
                         const row = document.createElement('tr');
 
                         row.innerHTML = `
-                        <td><span class="fw-bold">${assignment.assignment_id}</span></td>
-                        <td>${assignment.title}</td>
-                        <td><span class="badge bg-light text-dark">${assignment.type}</span></td>
-                        <td>${formatDateTime(assignment.start_time)}</td>
-                        <td>${formatDateTime(assignment.end_time)}</td>
-                        <td>${createStatusBadge(assignment.status)}</td>
-                        <td>${createActionButtons('assignment', assignment.assignment_id)}</td>
-                    `;
+                <td><span class="fw-bold">${assignment.assignment_id}</span></td>
+                <td>${assignment.title}</td>
+                <td><span class="badge bg-light text-dark">${assignment.type}</span></td>
+                <td>${formatDateTime(assignment.start_time)}</td>
+                <td>${formatDateTime(assignment.end_time)}</td>
+                <td>${createStatusBadge(assignment.status)}</td>
+                <td>${createActionButtons('assignment', assignment.assignment_id)}</td>
+            `;
 
                         assignmentsTable.appendChild(row);
                     });
 
                     // Khởi tạo tooltips
-                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                    tooltipTriggerList.map(function(tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl);
-                    });
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.map(function(tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                    }
+
+                    // Ẩn thông báo trống
+                    const emptyElement = document.querySelector('#assignments-empty');
+                    if (emptyElement) {
+                        emptyElement.classList.add('d-none');
+                    }
                 } else {
                     // Hiển thị thông báo nếu không có dữ liệu
-                    document.querySelector('#assignments-empty').classList.remove('d-none');
+                    const emptyElement = document.querySelector('#assignments-empty');
+                    if (emptyElement) {
+                        emptyElement.classList.remove('d-none');
+                    }
                     assignmentsTable.innerHTML = '';
                 }
             })
             .catch(error => {
                 console.error('Lỗi khi gọi API bài tập:', error);
-                document.querySelector('#assignments-table tbody').innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
-                        <p class="mb-0">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</p>
-                        <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
-                            <i class="fas fa-sync-alt me-1"></i> Tải lại
-                        </button>
-                    </td>
-                </tr>
-            `;
+                const assignmentsTable = document.querySelector('#assignments-table tbody');
+                if (assignmentsTable) {
+                    assignmentsTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+                    <p class="mb-0">Không thể tải dữ liệu bài tập. Vui lòng thử lại sau.</p>
+                    <p class="text-danger small">Lỗi: ${error.message}</p>
+                    <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1"></i> Tải lại
+                    </button>
+                </td>
+            </tr>
+        `;
+                }
             });
 
         // Lấy dữ liệu bài kiểm tra từ API
-        fetch(`/api/lecturer-student/exams?lecturer_id=${lecturerId}`)
-            .then(response => response.json())
-            .then(data => {
-                const examsTable = document.querySelector('#exams-table tbody');
+        console.log(`Đang gọi API: /api/lecturer-student/exams?lecturer_id=${lecturerId}`);
 
-                if (data.success && data.data && Array.isArray(data.data)) {
+        fetch(`/api/lecturer-student/exams?lecturer_id=${lecturerId}`, {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('Phản hồi API bài kiểm tra:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dữ liệu bài kiểm tra nhận được:', data);
+                const examsTable = document.querySelector('#exams-table tbody');
+                if (!examsTable) {
+                    console.error('Không tìm thấy bảng bài kiểm tra trong DOM');
+                    return;
+                }
+
+                // Xử lý dữ liệu bài kiểm tra
+                let exams = [];
+                if (data.success && data.data) {
+                    if (data.data.data && Array.isArray(data.data.data)) {
+                        exams = data.data.data;
+                    } else if (Array.isArray(data.data)) {
+                        exams = data.data;
+                    }
+                }
+
+                if (exams.length > 0) {
                     examsTable.innerHTML = ''; // Xóa dữ liệu cũ
 
-                    data.data.forEach(exam => {
+                    exams.forEach(exam => {
                         const row = document.createElement('tr');
 
                         row.innerHTML = `
-                        <td><span class="fw-bold">${exam.exam_id}</span></td>
-                        <td>${exam.title}</td>
-                        <td><span class="badge bg-light text-dark">${exam.type}</span></td>
-                        <td>${formatDateTime(exam.start_time)}</td>
-                        <td>${formatDateTime(exam.end_time)}</td>
-                        <td>${createStatusBadge(exam.status)}</td>
-                        <td>${createActionButtons('exam', exam.exam_id)}</td>
-                    `;
+                <td><span class="fw-bold">${exam.exam_id}</span></td>
+                <td>${exam.title}</td>
+                <td><span class="badge bg-light text-dark">${exam.type}</span></td>
+                <td>${formatDateTime(exam.start_time)}</td>
+                <td>${formatDateTime(exam.end_time)}</td>
+                <td>${createStatusBadge(exam.status)}</td>
+                <td>${createActionButtons('exam', exam.exam_id)}</td>
+            `;
 
                         examsTable.appendChild(row);
                     });
 
                     // Khởi tạo tooltips
-                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                    tooltipTriggerList.map(function(tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl);
-                    });
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.map(function(tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                    }
+
+                    // Ẩn thông báo trống
+                    const emptyElement = document.querySelector('#exams-empty');
+                    if (emptyElement) {
+                        emptyElement.classList.add('d-none');
+                    }
                 } else {
                     // Hiển thị thông báo nếu không có dữ liệu
-                    document.querySelector('#exams-empty').classList.remove('d-none');
+                    const emptyElement = document.querySelector('#exams-empty');
+                    if (emptyElement) {
+                        emptyElement.classList.remove('d-none');
+                    }
                     examsTable.innerHTML = '';
                 }
             })
             .catch(error => {
                 console.error('Lỗi khi gọi API bài kiểm tra:', error);
-                document.querySelector('#exams-table tbody').innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
-                        <p class="mb-0">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</p>
-                        <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
-                            <i class="fas fa-sync-alt me-1"></i> Tải lại
-                        </button>
-                    </td>
-                </tr>
-            `;
+                const examsTable = document.querySelector('#exams-table tbody');
+                if (examsTable) {
+                    examsTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+                    <p class="mb-0">Không thể tải dữ liệu bài kiểm tra. Vui lòng thử lại sau.</p>
+                    <p class="text-danger small">Lỗi: ${error.message}</p>
+                    <button class="btn btn-sm btn-outline-primary mt-3" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1"></i> Tải lại
+                    </button>
+                </td>
+            </tr>
+        `;
+                }
             });
 
         // Hiển thị tab được chọn dựa trên URL hash nếu có
