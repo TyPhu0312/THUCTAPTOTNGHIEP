@@ -18,6 +18,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\StudentAssignmentController;
+use App\Http\Controllers\StudentTaskController;
 
 // ========== ROUTE CÔNG KHAI ==========
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -106,6 +107,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::post('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+    // làm bài
+
+    Route::get('/task/start', [StudentTaskController::class, 'redirectToProperPage']);
+    Route::get('/essay', function () {
+        return view('essay'); // hoặc gọi controller nếu bạn muốn render từ backend
+    })->name('essay.page');
+
+    Route::get('/quiz', function () {
+        return view('quiz');
+    })->name('quiz.page');
+
 });
 
 // ========== ROUTE DÀNH RIÊNG CHO GIẢNG VIÊN ==========

@@ -20,6 +20,7 @@ use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
 use App\Http\Controllers\ITCourseController;
 use App\Http\Controllers\LecturerAssignmentController;
+use App\Http\Controllers\StudentTaskController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -99,7 +100,7 @@ Route::prefix('lecturers')->group(function () {
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
     Route::get('/detail/{list_question_id}', [ListQuestionController::class, 'showDetailQuestion']);
-    Route::post('/create', [ListQuestionController::class, 'storeFromWeb']);
+    Route::post('/create', [ListQuestionController::class, 'store']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
@@ -156,6 +157,7 @@ Route::prefix('sub-list-questions')->group(function () {
 Route::prefix('assignments')->group(function () {
     Route::get('/', [AssignmentController::class, 'index']);
     Route::post('/create', [AssignmentController::class, 'store']);
+    Route::post('/createAss', [AssignmentController::class, 'storeAss']);
     Route::get('/getById/{id}', [AssignmentController::class, 'show']);
     Route::put('/update/{id}', [AssignmentController::class, 'update']);
     Route::delete('/delete/{id}', [AssignmentController::class, 'destroy']);
@@ -241,3 +243,6 @@ Route::prefix('lecturer-student')->group(function () {
 
 Route::get('/assignments-test', [AssignmentController::class, 'getAllAssignments']);
 Route::get('/exams-test', [AssignmentController::class, 'getAllExams']);
+
+Route::get('/getAllExamsAndAssignments/{studentId}', [StudentTaskController::class, 'getAllStudentTasks']);
+Route::get('/getAllStudentTasksOfCourse/{studentId}/{courseId}', [StudentTaskController::class, 'getAllStudentTasksOfCourse']);
