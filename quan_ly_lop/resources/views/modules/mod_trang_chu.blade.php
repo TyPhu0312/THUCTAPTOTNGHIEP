@@ -9,7 +9,7 @@
         @endif
         @auth
             <!-- Thông tin người dùng -->
-            <div class="profile-header card mb-4">
+            <div class="profile-header card mb-4 mx-auto">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">

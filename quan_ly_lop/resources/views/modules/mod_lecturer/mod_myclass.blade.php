@@ -1,4 +1,4 @@
-@extends('templates.template_lecture')
+@extends('templates.template_normal')
 @section('main-content')
     <div class="container py-4">
         @if(session('success'))
@@ -7,9 +7,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+
         @auth
-            <!-- Thông tin người dùng -->
-            <div class="profile-header card mb-4 mx-auto">
+            <!-- Header Profile -->
+            <div class="profile-header card mb-4">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
@@ -28,57 +29,55 @@
                 </div>
             </div>
 
+            <!-- Thống kê -->
+            <div class="stats-row row g-4 mb-4" id="statistical">
+            </div>
+
             <!-- Thanh tìm kiếm và lọc -->
-            <div class="search-filter-container mb-4">
-                <div class="row g-3">
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <input type="text" class="form-control search-input" placeholder="Tìm kiếm lớp học..."
-                                id="searchInput">
-                            <button class="btn btn-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
+            <div class="search-filter-card card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" class="form-control search-input"
+                                    placeholder="Tìm kiếm lớp học...">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <select class="form-select">
-                            <option selected>Tất cả lớp học</option>
-                            <option>Đang diễn ra</option>
-                            <option>Sắp khai giảng</option>
-                            <option>Đã kết thúc</option>
-                        </select>
+                        <div class="col-md-3">
+                            <select id="statusSelect" class="form-select custom-select">
+                                <option value="">Trạng thái</option>
+                                <option value="Đang học">Đang học</option>
+                                <option value="Đã hoàn thành">Đã hoàn thành</option>
+                                <option value="Tất cả">Tất cả</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="sortSelect" class="form-select custom-select">
+                                <option value="">Sắp xếp theo</option>
+                                <option value="newest">Mới nhất</option>
+                                <option value="oldest">Cũ nhất</option>
+                                <option value="name_asc">Tên A-Z</option>
+                                <option value="name_desc">Tên Z-A</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Thống kê lớp học -->
-            <div class="d-flex flex-column justify-content-start ">
-                <h3 class="section-title mb-4">Lớp học hiện có</h3>
-                <div class="row justify-content-start" id="dynamic-classes">
-                </div>
-            </div>
-        @else
-            <!-- Trang chào mừng cho khách -->
-            <div class="welcome-container text-center py-5">
-                <div class="welcome-icon mb-4">
-                    <i class="fas fa-graduation-cap fa-4x text-primary"></i>
-                </div>
-                <h2 class="welcome-title mb-3">Chào mừng đến với hệ thống quản lý lớp học</h2>
-                <p class="welcome-text mb-4">Đăng nhập để trải nghiệm đầy đủ các tính năng của hệ thống.</p>
-                <div class="welcome-buttons">
-                    <a href="{{ route('Showlogin') }}" class="btn btn-primary btn-lg me-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-                    </a>
-                    <!--                     <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg">
-                                                        <i class="fas fa-user-plus me-2"></i>Đăng ký
-                                                    </a> -->
+
+            <!-- Danh sách lớp -->
+            <div class="classes-section">
+                <h4 class="section-title mb-4">Lớp của tôi</h4>
+                <div class="row g-4" id="dynamic-classes">
+
                 </div>
             </div>
         @endauth
     </div>
     @auth
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="lecturer-id" content="{{ Auth::user()->lecturer_id }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="lecturer-id" content="{{ Auth::user()->lecturer_id }}">
     @endauth
 
     <script>
@@ -98,7 +97,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Nếu bạn trả về object {lecturer_id, fullname, classrooms: [...]}
+                    // Nếu trả về object {lecturer_id, fullname, classrooms: [...]}
                     renderClasses(data.classrooms || []);
                     window.allClasses = data.classrooms || [];
                     searchBox();
@@ -120,42 +119,42 @@
             let html = '';
             data.forEach(classItem => {
                 html += `
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="class-card card h-100">
-                                <div class="class-card-header">
-                                    <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course?.course_name || 'Lớp học'}">
-                                </div>
-
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <p class="card-author mb-0">
-                                            <i class="fas fa-chalkboard-teacher me-2"></i>Bạn
-                                        </p>
-                                    </div>
-                                    <h5 class="card-title">${classItem.course?.course_name || 'Tên lớp'}</h5>
-                                    <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
-
-                                    <div class="class-info">
-                                        <div class="info-item">
-                                            <i class="fas fa-users me-2"></i>
-                                            <span>${classItem.studentClasses?.length || 0}</span>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="class-card card h-100">
+                                        <div class="class-card-header">
+                                            <img src="${classItem.image || 'images/header_image/default-class.jpg'}" class="class-image" alt="${classItem.course?.course_name || 'Lớp học'}">
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fas fa-calendar-alt me-2"></i>
-                                            <span>${classItem.class_duration || 'N/A'}</span>
+
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <p class="card-author mb-0">
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Bạn
+                                                </p>
+                                            </div>
+                                            <h5 class="card-title">${classItem.course?.course_name || 'Tên lớp'}</h5>
+                                            <p class="card-text text-muted">${classItem.class_description || 'Không có mô tả'}</p>
+
+                                            <div class="class-info">
+                                                <div class="info-item">
+                                                    <i class="fas fa-users me-2"></i>
+                                                    <span>${classItem.studentClasses?.length || 0}</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-calendar-alt me-2"></i>
+                                                    <span>${classItem.class_duration || 'N/A'}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <button class="btn btn-outline-primary w-100 join-button"
+                                                    data-class-id="${classItem.class_id}">
+                                                    <i class="fas fa-eye me-2"></i>Xem chi tiết
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary w-100 join-button"
-                                            data-class-id="${classItem.class_id}">
-                                            <i class="fas fa-eye me-2"></i>Xem chi tiết
-                                        </button>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `;
+                            `;
             });
 
             container.innerHTML = html;

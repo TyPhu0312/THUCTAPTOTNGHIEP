@@ -18,6 +18,7 @@ class SubList extends Model
         'sub_list_id',
         'title',
         'isShuffle',
+        'list_question_id',
     ];
 
     public $timestamps = true;
@@ -30,13 +31,10 @@ class SubList extends Model
             $sub_list->sub_list_id = (string) Str::uuid();
         });
     }
-    // Một SubList có thể có nhiều Assignment
     public function assignments()
     {
         return $this->hasMany(Assignment::class, 'sub_list_id');
     }
-
-    // Một SubList có thể có nhiều Exam
     public function exams()
     {
         return $this->hasMany(Exam::class, 'sub_list_id');

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class SubListQuestion extends Model
 {
@@ -14,7 +13,6 @@ class SubListQuestion extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'sub_list_question_id',
         'sub_list_id', // Khóa ngoại
         'question_id',  // Khóa ngoại
     ];
