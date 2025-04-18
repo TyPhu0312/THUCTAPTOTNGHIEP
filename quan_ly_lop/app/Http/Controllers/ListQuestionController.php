@@ -19,7 +19,7 @@ class ListQuestionController extends Controller
     public function getAllListQuestionsWithLecturer($lecturer_id)
     {
         try {
-            // Lấy danh sách câu hỏi của giảng viên theo lecturer_id
+            $courseId = request()->query('course_id', 'null');
             $query = ListQuestion::with([
                 'lecturer' => function ($query) {
                     $query->select('lecturer_id', 'fullname');
@@ -27,21 +27,20 @@ class ListQuestionController extends Controller
                 'course' => function ($query) {
                     $query->select('course_id', 'course_name');
                 }
-            ])->where('lecturer_id', $lecturer_id); // Chỉ xét theo lecturer_id
-
-            $listQuestions = $query->orderByDesc('created_at')->get(); // Lấy danh sách câu hỏi theo thứ tự tạo mới nhất
-
-            return response()->json($listQuestions); // Trả về danh sách câu hỏi dưới dạng JSON
+            ])->where('lecturer_id', $lecturer_id);
+            if ($courseId !== 'null' && $courseId !== 'all') {
+                $query->where('course_id', $courseId);
+            }
+            $listQuestions = $query->orderByDesc('created_at')->get();
+            return response()->json($listQuestions);
         } catch (\Exception $e) {
-            // Nếu có lỗi, ghi log và trả về lỗi
-            \Log::error('Lỗi lấy danh sách bộ câu hỏi: ' . $e->getMessage());
-
             return response()->json([
                 'error' => 'Đã xảy ra lỗi khi lấy danh sách bộ câu hỏi.',
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
+
     // Lấy thông tin chi tiết một danh sách câu hỏi
     public function show($id)
     {

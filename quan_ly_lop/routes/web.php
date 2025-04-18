@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LecturerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
@@ -132,7 +133,13 @@ Route::middleware('auth:lecturer')->group(function () {
     Route::get('/lecturer/chi_tiet_bo_cau_hoi/{list_question_id}', function ($list_question_id) {
         return view('lecturerViews.chi_tiet_bo_cau_hoi', ['list_question_id' => $list_question_id]);
     })->name('viewListQuestionDetail');
-
+    Route::get('/myclassLecturer', function () {
+        return view('lecturerViews.myclassLecturer');
+    })->name('myclassLecturer');
+    Route::get('/accountLecturer', function () {
+        return view('lecturerViews.tai_khoan');
+    })->name('accountLecturer');
+    Route::put('/updateInfo/{id}', [LecturerController::class, 'update'])->name('updateInfo');
 });
 
 // ========== ROUTE PHỤ: DÙNG NỘI BỘ ==========

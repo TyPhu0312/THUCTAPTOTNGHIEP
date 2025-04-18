@@ -50,4 +50,8 @@ class ListQuestion extends Model
     {
         return $this->belongsTo(Lecturer::class, 'lecturer_id');
     }
+    public function subLists()
+    {
+        return $this->hasMany(SubList::class, 'list_question_id', 'list_question_id');
+    }
 }

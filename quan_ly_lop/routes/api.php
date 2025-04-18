@@ -135,6 +135,8 @@ Route::prefix('student-classes')->group(function () {
 // API cho SubList
 Route::prefix('sub-lists')->group(function () {
     Route::get('/', [SubListController::class, 'index']);
+    Route::get('/getAll/{subListId}', [SubListController::class, 'getAllSublist']);
+    Route::get('/{sublistsId}', [SubListController::class, 'getAll']);
     Route::post('/create', [SubListController::class, 'store']);
     Route::get('/getById/{id}', [SubListController::class, 'show']);
     Route::put('/update/{id}', [SubListController::class, 'update']);
@@ -149,6 +151,7 @@ Route::prefix('sub-list-questions')->group(function () {
     Route::put('/update/{id}', [SubListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [SubListQuestionController::class, 'destroy']);
 });
+
 
 // API cho Assignment
 Route::prefix('assignments')->group(function () {

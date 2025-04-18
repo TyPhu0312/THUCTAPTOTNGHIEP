@@ -83,15 +83,15 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'myclass' ? 'active-nav' : '' }}"
-                        href="{{ route('myclass') }}">
+                    <a class="nav-link {{ $currentRoute == 'myclassLecturer' ? 'active-nav' : '' }}"
+                        href="{{ route('myclassLecturer') }}">
                         LỚP ĐANG GIẢNG DẠY
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ $currentRoute == 'account' ? 'active-nav' : '' }}"
-                        href="{{ route('account') }}">
+                    <a class="nav-link {{ $currentRoute == 'accountLecturer' ? 'active-nav' : '' }}"
+                        href="{{ route('accountLecturer') }}">
                         TÀI KHOẢN
                     </a>
                 </li>

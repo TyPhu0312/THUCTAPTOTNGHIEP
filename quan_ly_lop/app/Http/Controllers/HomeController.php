@@ -18,5 +18,4 @@ class HomeController extends Controller
             abort(403, 'Không xác định người dùng');
         }
     }
-
 }
