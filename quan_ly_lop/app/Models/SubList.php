@@ -43,8 +43,9 @@ class SubList extends Model
     {
         return $this->hasMany(SubListQuestion::class, 'sub_list_id', 'sub_list_id');
     }
+
     public function questions()
     {
-        return $this->hasManyThrough(Question::class, SubListQuestion::class, 'sub_list_id', 'list_question_id', 'sub_list_id', 'list_question_id');
+        return $this->belongsToMany(Question::class, 'sub_list_question', 'sub_list_id', 'question_id');
     }
 }

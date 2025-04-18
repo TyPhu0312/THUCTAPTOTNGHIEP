@@ -19,6 +19,8 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\StudentAssignmentController;
 use App\Http\Controllers\ITCourseController;
+use App\Http\Controllers\LecturerAssignmentController;
+use App\Http\Controllers\StudentTaskController;
 
 // API lấy thông tin user đang đăng nhập
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -60,6 +62,7 @@ Route::prefix('submissions')->group(function () {
     Route::get('/getById/{id}', [SubmissionController::class, 'show']);
     Route::put('/update/{id}', [SubmissionController::class, 'update']);
     Route::delete('/delete/{id}', [SubmissionController::class, 'destroy']);
+    Route::get('/byteacher/{teacher_id}', [SubmissionController::class, 'getByTeacher']);
 });
 
 // API cho Student
@@ -97,7 +100,7 @@ Route::prefix('lecturers')->group(function () {
 Route::prefix('list-questions')->group(function () {
     Route::get('/', [ListQuestionController::class, 'index']);
     Route::get('/detail/{list_question_id}', [ListQuestionController::class, 'showDetailQuestion']);
-    Route::post('/create', [ListQuestionController::class, 'storeFromWeb']);
+    Route::post('/create', [ListQuestionController::class, 'store']);
     Route::get('/getById/{id}', [ListQuestionController::class, 'show']);
     Route::put('/update/{id}', [ListQuestionController::class, 'update']);
     Route::delete('/delete/{id}', [ListQuestionController::class, 'destroy']);
@@ -157,6 +160,7 @@ Route::prefix('sub-list-questions')->group(function () {
 Route::prefix('assignments')->group(function () {
     Route::get('/', [AssignmentController::class, 'index']);
     Route::post('/create', [AssignmentController::class, 'store']);
+    Route::post('/createAss', [AssignmentController::class, 'storeAss']);
     Route::get('/getById/{id}', [AssignmentController::class, 'show']);
     Route::put('/update/{id}', [AssignmentController::class, 'update']);
     Route::delete('/delete/{id}', [AssignmentController::class, 'destroy']);
@@ -197,7 +201,7 @@ Route::prefix('student')->group(function () {
     // Lấy danh sách câu hỏi cho bài thi hoặc bài tập
     Route::get('/questions', [StudentAssignmentController::class, 'getQuestions']);
 
-    // 🔽 Thêm CRUD Submission
+    // Thêm CRUD Submission
     Route::get('/submissions', [StudentAssignmentController::class, 'listSubmissions']); // ?student_id=...&type=assignment|exam&target_id=...
     Route::post('/submissions', [StudentAssignmentController::class, 'storeSubmission']);
     Route::get('/submissions/{id}', [StudentAssignmentController::class, 'showSubmission']);
@@ -210,3 +214,38 @@ Route::prefix('it-courses')->group(function () {
     Route::get('/{id}/books', [ITCourseController::class, 'getRecommendedBooks']);
 });
 
+// Các route không cần đăng nhập (có thể truyền lecturer_id qua tham số)
+// /api/lecturer-student/assignments?lecturer_id=LEC001
+// /api/lecturer-student/exams?lecturer_id=LEC001&type=Trắc nghiệm
+Route::prefix('lecturer-student')->group(function () {
+    //  // Lấy bài tập theo giảng viên
+    //  Route::get('/assignment/{lecturer_id}', [LecturerAssignmentController::class, 'getAssignments']);
+
+    //  // Lấy bài kiểm tra theo giảng viên
+    //  Route::get('/exam/{lecturer_id}', [LecturerAssignmentController::class, 'getExams']);
+
+    // Lấy danh sách bài tập theo giảng viên
+    Route::get('/assignments', [LecturerAssignmentController::class, 'getAssignments']);
+
+    // Lấy danh sách bài kiểm tra theo giảng viên
+    Route::get('/exams', [LecturerAssignmentController::class, 'getExams']);
+    // Lấy danh sách bài tập
+    Route::get('/exams/{examId}', [ExamController::class, 'getExamDetail']);
+
+    // Lấy danh sách bài kiểm tra
+    Route::get('/assignments/{assignmentId}', [AssignmentController::class, 'getAssignmentDetail']);
+
+    // Lấy tất cả bài tập và bài kiểm tra theo khóa học
+    Route::get('/all-by-course', [LecturerAssignmentController::class, 'getAllAssignmentsAndExamsByCourse']);
+
+    // Lấy thống kê nộp bài
+    Route::get('/submission-stats', [LecturerAssignmentController::class, 'getSubmissionStats']);
+});
+
+
+
+Route::get('/assignments-test', [AssignmentController::class, 'getAllAssignments']);
+Route::get('/exams-test', [AssignmentController::class, 'getAllExams']);
+
+Route::get('/getAllExamsAndAssignments/{studentId}', [StudentTaskController::class, 'getAllStudentTasks']);
+Route::get('/getAllStudentTasksOfCourse/{studentId}/{courseId}', [StudentTaskController::class, 'getAllStudentTasksOfCourse']);

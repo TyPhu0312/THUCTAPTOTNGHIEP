@@ -9,8 +9,6 @@ class SubListQuestion extends Model
 {
     use HasFactory;
     protected $table = 'sub_list_question';
-
-    // Xoá primaryKey và incrementing vì không còn sử dụng sub_list_question_id nữa
     public $incrementing = false;
     protected $keyType = 'string';
 
