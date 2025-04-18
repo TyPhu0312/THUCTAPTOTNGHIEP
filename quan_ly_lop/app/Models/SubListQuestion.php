@@ -10,7 +10,6 @@ class SubListQuestion extends Model
 {
     use HasFactory;
     protected $table = 'sub_list_question';
-    protected $primaryKey = 'sub_list_question_id';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -19,16 +18,7 @@ class SubListQuestion extends Model
         'sub_list_id', // Khóa ngoại
         'question_id',  // Khóa ngoại
     ];
-    public $timestamps = true;
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($sub_list_question) {
-            $sub_list_question->sub_list_question_id = (string) Str::uuid();
-        });
-    }
+    public $timestamps = false;
 
     // Quan hệ với bảng `sub_list`
     public function sub_list()

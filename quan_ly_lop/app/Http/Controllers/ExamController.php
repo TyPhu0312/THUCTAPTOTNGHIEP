@@ -6,6 +6,10 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Exam;
+use App\Models\SubList;
+use App\Models\StudentClass;
+use App\Models\Classroom;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -18,15 +22,45 @@ class ExamController extends Controller
     }
     public function show($id)
     {
-        $exam = Exam::find($id);
+        $exam = Exam::with([
+            'subList.subListQuestions.question.options'
+        ])->find($id);
+
         if (!$exam) {
             return response()->json(['message' => 'Bài thi không tồn tại!'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($exam);
+
+        $questions = $exam->subList->subListQuestions->map(function ($item) use ($exam) {
+            $question = $item->question;
+
+            if ($exam->type === 'Trắc nghiệm') {
+                return [
+                    'question_id' => $question->question_id,
+                    'content'     => $question->content,
+                    'choices'     => $question->options->map(function ($opt) {
+                        return $opt->option_text;
+                    }),
+                ];
+            } else {
+                return [
+                    'question_id' => $question->question_id,
+                    'content'     => $question->content,
+                ];
+            }
+        });
+
+        return response()->json([
+            'exam_id'   => $exam->exam_id,
+            'title'     => $exam->title,
+            'type'      => $exam->type,
+            'questions' => $questions,
+        ]);
     }
+
     public function store(Request $request)
     {
         $request->validate([
+            'sub_list_id' => 'required|string|max:100',
             'title' => 'required|string|max:100',
             'content' => 'nullable|string|max:100',
             'type' => 'required|string|in:' . implode(',', Exam::getAllowedTypes()),
@@ -38,6 +72,7 @@ class ExamController extends Controller
 
         $exam = Exam::create([
             'exam_id' => Str::uuid(),
+            'sub_list_id' => $request->sub_list_id,
             'title' => $request->title,
             'content' => $request->content,
             'type' => $request->type,
@@ -46,6 +81,47 @@ class ExamController extends Controller
             'end_time' => $request->end_time,
             'status' => $request->status,
         ]);
+        $students = DB::table('exam')
+        ->join('sub_list','exam.sub_list_id','=','sub_list.sub_list_id')
+        ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
+        ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
+        ->join('list_question', 'question.list_question_id', '=', 'list_question.list_question_id')
+        ->join('classroom', 'list_question.course_id', '=', 'classroom.course_id')
+        ->join('student_class', 'classroom.class_id', '=', 'student_class.class_id')
+        ->join('student', 'student_class.student_id', '=', 'student.student_id')
+        ->where('exam.exam_id', $exam->exam_id)
+        ->select('student.full_name', 'student.school_email')
+        ->distinct()
+        ->get();
+
+        $mailFailed = false;
+
+        foreach ($students as $student) {
+            $to = $student->school_email;
+            $subject = 'Thông báo bài thi mới';
+            $message = "Chào {$student->full_name},\n\n";
+            $message .= "Bạn có bài thi mới: {$exam->title}\n";
+            $message .= "Loại: {$exam->type}\n";
+            $message .= "Bắt đầu: {$exam->start_time}\n";
+            $message .= "Kết thúc: {$exam->end_time}\n\n";
+            $message .= "Vui lòng kiểm tra hệ thống để biết thêm chi tiết.\n\n";
+            $message .= "Trân trọng!";
+
+            try {
+                Mail::raw($message, function ($msg) use ($to, $subject) {
+                    $msg->to($to)->subject($subject);
+                });
+            } catch (\Exception $e) {
+                $mailFailed = true;
+            }
+        }
+
+        if ($mailFailed) {
+            return response()->json([
+                'message' => 'Bài thi đã được tạo, nhưng một số email không gửi được.',
+                'exam' => $exam
+            ], 201);
+        }
 
         return response()->json([
             'message' => 'Bài thi đã được tạo thành công!',
