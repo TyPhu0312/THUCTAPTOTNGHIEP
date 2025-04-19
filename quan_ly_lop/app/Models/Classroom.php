@@ -19,6 +19,7 @@ class Classroom extends Model
         'class_id',
         'course_id',  // Khóa phụ
         'lecturer_id', //khoá phụ
+        'student_classes',//khoá phụ
         'class_code',
         'class_description',
         'class_duration',

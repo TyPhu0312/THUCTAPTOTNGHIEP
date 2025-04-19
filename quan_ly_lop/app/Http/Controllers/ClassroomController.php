@@ -8,7 +8,6 @@ use App\Models\Classroom;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Helpers\StringHelper;
-use Illuminate\Support\Facades\DB;
 
 class ClassroomController extends Controller
 {

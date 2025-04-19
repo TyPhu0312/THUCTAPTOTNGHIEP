@@ -294,31 +294,55 @@
         padding: 1.25rem;
     }
 
+    .card-hover {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    /* Dải màu đầu thẻ */
+    .card-hover::before {
+        content: "";
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background-color: #007bff;
+        /* Màu mặc định */
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Mũi tên */
     .card-hover::after {
         content: '→';
-        /* hoặc dùng biểu tượng khác như '\2192' */
         position: absolute;
-        bottom: -10px;
-        left: 90%;
-        transform: translateX(-50%);
+        bottom: 16px;
+        right: 16px;
         opacity: 0;
-        transition: opacity 0.3s ease;
-        font-size: 2.0rem;
+        transform: translateY(10px);
+        transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        font-size: 1.8rem;
         color: #007bff;
+        pointer-events: none;
+    }
+
+    /* Hover đồng bộ cả 2 */
+    .card-hover:hover::before {
+        background-color: #28a745;
+        /* Dải màu đổi */
     }
 
     .card-hover:hover::after {
         opacity: 1;
+        transform: translateY(0);
+        color: #28a745;
+        /* Mũi tên đổi màu luôn cho đồng bộ */
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        transition: 0.3s;
-        position: relative;
-        transition: box-shadow 0.3s ease;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-    }
 
     .card-text strong {
         color: #495057;
@@ -448,7 +472,7 @@
     </div>
 </div>
 <meta name="csrf-token" content="{{ csrf_token() }}">
-
+<meta name="lecturer-id" content="{{ Auth::user()->lecturer_id }}">
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -460,7 +484,7 @@
         const temporaryQuestionsSection = document.getElementById('temporaryQuestionsSection');
         let optionCount = 1;
         const courseId = 'bb18b2e3-b400-44f9-ae2a-d72853575eb3';
-        const lecturerId = '13c21c5f-bb57-4e1f-9f65-a3bf69f4cc17';
+        const lecturerId = document.querySelector('meta[name="lecturer-id"]').getAttribute('content');
         const filterSelect = document.getElementById('courseFilter');
         const courseSelect = document.getElementById("courseFilter");
         const courseToCreateQuestion = document.getElementById("courseSelect");
@@ -475,24 +499,24 @@
             renderTemporaryQuestions();
         }
         function fetchListQuestions(courseId = "null") {
-            fetch(`/api/list-questions/getAllQuestion/${courseId}/${lecturerId}`)
+            let url = `/api/list-questions/${lecturerId}`;
+            if (courseId !== "null" && courseId !== "all") {
+                url += `?course_id=${courseId}`;
+            }
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById("list-question-container");
-                    container.innerHTML = ""; // Xoá dữ liệu cũ
-
+                    container.innerHTML = "";
                     if (data.length === 0) {
                         container.innerHTML = `<p class="text-muted">Chưa có bộ câu hỏi nào cho môn học này.</p>`;
                         return;
                     }
-
                     data.forEach(item => {
                         const card = document.createElement("div");
                         card.className = "col";
-
                         const lecturerName = item.lecturer?.fullname || "Không rõ";
                         const courseName = item.course?.course_name || "Không rõ";
-
                         card.innerHTML = `
                     <div class="card h-100 shadow-sm card-hover position-relative" data-id="${item.list_question_id}">
                         <div class="card-body">
@@ -500,17 +524,14 @@
                             <p class="card-text"><strong>Giảng viên:</strong> ${lecturerName}</p>
                             <p class="card-text"><small class="text-muted">Tạo lúc: ${new Date(item.created_at).toLocaleString()}</small></p>
                         </div>
-                        <div class="arrow-icon">→</div>
                     </div>
                 `;
-
                         const cardElement = card.querySelector('.card');
                         cardElement.addEventListener("click", () => {
                             const listQuestionId = cardElement.getAttribute("data-id");
                             window.location.href = `/lecturer/chi_tiet_bo_cau_hoi/${listQuestionId}`;
                         });
-
-                        container.appendChild(card); // Chỉ append ở đây thôi
+                        container.appendChild(card);
                     });
                 })
                 .catch(error => {
@@ -519,7 +540,6 @@
                         `<p class="text-danger">Không thể tải dữ liệu. Vui lòng thử lại sau.</p>`;
                 });
         }
-
         courseFilter.addEventListener("change", function () {
             const selectedValue = this.value;
             const courseId = selectedValue === "all" ? "null" : selectedValue;
@@ -702,17 +722,13 @@
                 const title = document.getElementById('title').value;
                 const content = document.getElementById('content').value;
                 const type = document.getElementById('type').value;
-
                 console.log("Form data:", { title, content, type }); // Kiểm tra dữ liệu form
-
                 if (!title || !content) {
                     alert("Vui lòng nhập đầy đủ tiêu đề và nội dung câu hỏi!");
                     return;
                 }
-
                 const options = [];
                 let hasCorrectAnswer = false;
-
                 if (type === 'Trắc nghiệm') {
                     document.querySelectorAll('.option').forEach((optionElement, index) => {
                         const optionText = optionElement.querySelector('input[type="text"]').value;
@@ -723,9 +739,6 @@
                             if (isCorrect) hasCorrectAnswer = true;
                         }
                     });
-
-                    console.log("Options:", options); // Kiểm tra options
-
                     if (options.length < 2) {
                         alert("Câu hỏi trắc nghiệm cần ít nhất 2 lựa chọn!");
                         return;
@@ -736,13 +749,10 @@
                         return;
                     }
                 }
-
                 const question = { title, content, type, options };
-
                 let savedQuestions = JSON.parse(localStorage.getItem('questions')) || [];
                 savedQuestions.push(question);
                 localStorage.setItem('questions', JSON.stringify(savedQuestions));
-
                 alert("Câu hỏi đã được lưu tạm thời.");
                 resetForm();
                 renderTemporaryQuestions();
@@ -755,7 +765,6 @@
         if (finishCreatingButton) {
             finishCreatingButton.addEventListener('click', function () {
                 console.log("Finish button clicked"); // Kiểm tra sự kiện click
-
                 let savedQuestions = JSON.parse(localStorage.getItem('questions')) || [];
                 console.log("Saved questions:", savedQuestions); // Kiểm tra câu hỏi đã lưu
 
@@ -763,18 +772,13 @@
                     alert("Chưa có câu hỏi nào được lưu!");
                     return;
                 }
-
                 const listQuestionId = localStorage.getItem("list_question_id");
-                console.log("List question ID:", listQuestionId); // Kiểm tra list question ID
-
                 if (!listQuestionId) {
                     alert("Có lỗi xảy ra! Không tìm thấy danh sách câu hỏi.");
                     return;
                 }
-
                 finishCreatingButton.disabled = true;
                 finishCreatingButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
-
                 fetch('/api/questions/batch', {
                     method: 'POST',
                     headers: {
@@ -799,7 +803,7 @@
                             localStorage.removeItem('questions');
                             localStorage.removeItem('list_question_id');
                             alert("Tất cả câu hỏi đã được lưu thành công!");
-                            window.location.href = '/questions';
+                            window.location.href = '/createQuestion';
                         } else {
                             alert("Lỗi: " + data.message);
                         }
