@@ -56,7 +56,7 @@ class AssignmentController extends Controller
         });
 
         return response()->json([
-            'assignments_id'   => $assignments->assignments_id,
+            'assignment_id'   => $assignments->assignment_id,
             'title'     => $assignments->title,
             'type'      => $assignments->type,
             'questions' => $questions,
