@@ -191,7 +191,7 @@ Route::prefix('student')->group(function () {
     Route::post('/submit', [StudentAssignmentController::class, 'submitWork']);
 
     // Nộp câu trả lời cho các câu hỏi
-    Route::post('/submit-answers', [StudentAssignmentController::class, 'submitAnswers']);
+    Route::post('/submit-answers', [StudentAssignmentController::class, 'submitWorkAndAnswers']);
 
     // Xem trạng thái bài làm
     Route::get('/submission-status/{student_id}', [StudentAssignmentController::class, 'getSubmissionStatus']);

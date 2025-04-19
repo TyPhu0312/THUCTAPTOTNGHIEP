@@ -24,11 +24,9 @@ use App\Http\Controllers\StudentTaskController;
 
 // ========== ROUTE CÔNG KHAI ==========
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/classDetail', function () {
-    return view('show_class');
-});
+
 Route::get('/submission/show', [SubmissionController::class, 'show'])->name('submissions.show');
-Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
+
 
 // ========== ROUTE CHO GUEST ==========
 Route::middleware('guest')->group(function () {
@@ -119,6 +117,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/quiz', function () {
         return view('quiz');
     })->name('quiz.page');
+
+    Route::get('/classDetail', function () {
+        return view('show_class');
+    });
+    Route::get('/getCourseOfStudent/{student_id}', [CourseController::class, 'showCourseOfStudent'])->name('showCourseOfStudent');
 
 });
 
