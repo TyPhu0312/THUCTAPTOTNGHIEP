@@ -12,6 +12,7 @@ use App\Models\Question;
 use App\Models\Answer;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+
 class StudentAssignmentController extends Controller
 {
     /**
@@ -163,20 +164,21 @@ class StudentAssignmentController extends Controller
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|exists:question,question_id',
             'answers.*.answer_content' => 'required|string',
+            'is_final_submission' => 'boolean', // Thêm trường để xác định có phải nộp bài cuối cùng không
         ]);
 
-        // Ensure either exam_id or assignment_id is provided
+        // Đảm bảo có ít nhất một trong hai: exam_id hoặc assignment_id
         if (!$request->exam_id && !$request->assignment_id) {
-            return response()->json(['message' => 'Either exam_id or assignment_id must be provided.'], 400);
+            return response()->json(['message' => 'Phải cung cấp exam_id hoặc assignment_id.'], 400);
         }
 
-        // Check if the student exists
+        // Kiểm tra sinh viên tồn tại
         $student = Student::find($request->student_id);
         if (!$student) {
-            return response()->json(['message' => 'Student not found.'], 404);
+            return response()->json(['message' => 'Không tìm thấy sinh viên.'], 404);
         }
 
-        // Check for existing submission or create a new one
+        // Kiểm tra bài nộp đã tồn tại chưa
         $submission = Submission::where('student_id', $request->student_id)
             ->where(function ($query) use ($request) {
                 if ($request->exam_id) {
@@ -186,7 +188,25 @@ class StudentAssignmentController extends Controller
                 }
             })->first();
 
-        // If submission doesn't exist, create a new one
+        // Xử lý khác nhau cho bài kiểm tra và bài tập
+        if ($submission) {
+            // Với bài kiểm tra đã nộp, không cho chỉnh sửa
+            if ($request->exam_id && $submission->exam_id) {
+                $exam = Exam::find($request->exam_id);
+                if ($exam->status === 'Completed') {
+                    return response()->json(['message' => 'Bài kiểm tra đã được nộp và không thể chỉnh sửa.'], 403);
+                }
+            }
+            // Với bài tập, kiểm tra thời hạn
+            elseif ($request->assignment_id && $submission->assignment_id) {
+                $assignment = Assignment::find($request->assignment_id);
+                if (now() > $assignment->end_time) {
+                    return response()->json(['message' => 'Đã quá thời hạn nộp bài tập.'], 403);
+                }
+            }
+        }
+
+        // Nếu bài nộp chưa tồn tại, tạo mới
         if (!$submission) {
             $submissionData = [
                 'submission_id' => Str::random(50),
@@ -207,29 +227,63 @@ class StudentAssignmentController extends Controller
             $submission = Submission::create($submissionData);
         }
 
-        // Store each answer
+        // Lưu hoặc cập nhật từng câu trả lời
         foreach ($request->answers as $answerData) {
             $question = Question::find($answerData['question_id']);
 
-            // Create new answer without timestamps
-            DB::table('answer')->insert([
-                'answer_id' => Str::random(50),
-                'submission_id' => $submission->submission_id,
-                'question_title' => $question->title,
-                'question_content' => $question->content,
-                'question_answer' => $answerData['answer_content'],
-            ]);
+            // Kiểm tra câu trả lời đã tồn tại chưa
+            $existingAnswer = DB::table('answer')
+                ->where('submission_id', $submission->submission_id)
+                ->where('question_title', $question->title)
+                ->first();
+
+            if ($existingAnswer) {
+                // Cập nhật câu trả lời đã tồn tại
+                DB::table('answer')
+                    ->where('answer_id', $existingAnswer->answer_id)
+                    ->update([
+                        'question_answer' => $answerData['answer_content']
+                    ]);
+            } else {
+                // Tạo câu trả lời mới
+                DB::table('answer')->insert([
+                    'answer_id' => Str::random(50),
+                    'submission_id' => $submission->submission_id,
+                    'question_title' => $question->title,
+                    'question_content' => $question->content,
+                    'question_answer' => $answerData['answer_content'],
+                ]);
+            }
         }
 
-        // Update submission time
+        // Cập nhật thời gian nộp bài
         $submission->update([
             'update_at' => now()
         ]);
 
-        return response()->json([
-            'message' => 'Answers submitted successfully!',
-            'submission_id' => $submission->submission_id
-        ], 201);
+        // Nếu là bài nộp cuối cùng và là bài kiểm tra, cập nhật trạng thái
+        if ($request->is_final_submission && $request->exam_id) {
+            Exam::where('exam_id', $request->exam_id)
+                ->update(['status' => 'Completed']);
+
+            return response()->json([
+                'message' => 'Nộp bài kiểm tra thành công! Bài làm của bạn đã được hoàn thành và không thể chỉnh sửa.',
+                'submission_id' => $submission->submission_id
+            ], 201);
+        }
+
+        // Phản hồi khác nhau cho bài tập và bài kiểm tra
+        if ($request->exam_id) {
+            return response()->json([
+                'message' => 'Đã lưu câu trả lời bài kiểm tra. Vui lòng nộp bài khi hoàn thành.',
+                'submission_id' => $submission->submission_id
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Đã lưu câu trả lời bài tập. Bạn có thể tiếp tục chỉnh sửa trong thời hạn nộp bài.',
+                'submission_id' => $submission->submission_id
+            ], 200);
+        }
     }
 
     /**
