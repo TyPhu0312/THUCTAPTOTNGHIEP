@@ -34,14 +34,18 @@ class StudentTaskController extends Controller
 
         // 5. Lấy bài kiểm tra (exam)
         $exams = DB::table('exam')
-            ->join('sub_list','exam.sub_list_id','=','sub_list.sub_list_id')
+            ->join('sub_list', 'exam.sub_list_id', '=', 'sub_list.sub_list_id')
             ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
             ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
             ->join('list_question', 'question.list_question_id', '=', 'list_question.list_question_id')
             ->join('course', 'list_question.course_id', '=', 'course.course_id')
+            ->leftJoin('submission', function ($join) use ($studentId) {
+                $join->on('exam.exam_id', '=', 'submission.exam_id')
+                    ->where('submission.student_id', '=', $studentId);
+            })
             ->whereIn('exam.sub_list_id', $subListIds)
             ->select(
-                'exam_id',
+                'exam.exam_id',
                 'exam.sub_list_id as exam_sub_list_id',
                 'exam.title',
                 'exam.content',
@@ -50,22 +54,40 @@ class StudentTaskController extends Controller
                 'exam.start_time',
                 'exam.end_time',
                 'exam.status',
-                'course.course_name as course_name'
+                'course.course_name as course_name',
+                'submission.temporary_score as temporary_score'
             )
-            ->distinct()
+            ->groupBy(
+                'exam.exam_id',
+                'exam.sub_list_id',
+                'exam.title',
+                'exam.content',
+                'exam.type',
+                'exam.isSimultaneous',
+                'exam.start_time',
+                'exam.end_time',
+                'exam.status',
+                'course.course_name',
+                'submission.temporary_score'
+            )
             ->get();
+
 
         // 6. Lấy bài tập (assignment)
         $assignments = DB::table('assignment')
-            ->join('sub_list','assignment.sub_list_id','=','sub_list.sub_list_id')
+            ->join('sub_list', 'assignment.sub_list_id', '=', 'sub_list.sub_list_id')
             ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
             ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
             ->join('list_question', 'question.list_question_id', '=', 'list_question.list_question_id')
             ->join('course', 'list_question.course_id', '=', 'course.course_id')
+            ->leftJoin('submission', function ($join) use ($studentId) {
+                $join->on('assignment.assignment_id', '=', 'submission.assignment_id')
+                    ->where('submission.student_id', '=', $studentId);
+            })
             ->whereIn('assignment.sub_list_id', $subListIds)
             ->select(
                 'assignment.assignment_id',
-                'assignment.sub_list_id as assignment_sub_list_id', // Alias cho sub_list_id
+                'assignment.sub_list_id as assignment_sub_list_id',
                 'assignment.title',
                 'assignment.content',
                 'assignment.type',
@@ -74,9 +96,23 @@ class StudentTaskController extends Controller
                 'assignment.end_time',
                 'assignment.show_result',
                 'assignment.status',
-                'course.course_name as course_name'
+                'course.course_name',
+                'submission.temporary_score'
             )
-            ->distinct()
+            ->groupBy(
+                'assignment.assignment_id',
+                'assignment.sub_list_id',
+                'assignment.title',
+                'assignment.content',
+                'assignment.type',
+                'assignment.isSimultaneous',
+                'assignment.start_time',
+                'assignment.end_time',
+                'assignment.show_result',
+                'assignment.status',
+                'course.course_name',
+                'submission.temporary_score'
+            )
             ->get();
 
         return response()->json([
@@ -85,14 +121,14 @@ class StudentTaskController extends Controller
         ]);
     }
 
-    public function getAllStudentTasksOfCourse($studentId,$courseId)
+    public function getAllStudentTasksOfCourse($studentId, $courseId)
     {
         // 1. Kiểm tra sinh viên có học lớp của môn học đó không
         $isEnrolled = DB::table('student_class')
-        ->join('classroom', 'student_class.class_id', '=', 'classroom.class_id')
-        ->where('student_class.student_id', $studentId)
-        ->where('classroom.course_id', $courseId)
-        ->exists();
+            ->join('classroom', 'student_class.class_id', '=', 'classroom.class_id')
+            ->where('student_class.student_id', $studentId)
+            ->where('classroom.course_id', $courseId)
+            ->exists();
 
         if (!$isEnrolled) {
             return response()->json([
@@ -102,8 +138,8 @@ class StudentTaskController extends Controller
 
         // 2. Lấy list_question_id của môn học đó
         $listQuestionIds = DB::table('list_question')
-        ->where('course_id', $courseId)
-        ->pluck('list_question_id');
+            ->where('course_id', $courseId)
+            ->pluck('list_question_id');
 
         // 3. Lấy question_id từ list_question
         $questionIds = DB::table('question')
@@ -117,11 +153,15 @@ class StudentTaskController extends Controller
 
         // 5. Lấy bài kiểm tra (exam)
         $exams = DB::table('exam')
-            ->join('sub_list','exam.sub_list_id','=','sub_list.sub_list_id')
+            ->join('sub_list', 'exam.sub_list_id', '=', 'sub_list.sub_list_id')
             ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
             ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
             ->join('list_question', 'question.list_question_id', '=', 'list_question.list_question_id')
             ->join('course', 'list_question.course_id', '=', 'course.course_id')
+            ->leftJoin('submission', function ($join) use ($studentId) {
+                $join->on('exam.exam_id', '=', 'submission.exam_id')
+                    ->where('submission.student_id', '=', $studentId);
+            })
             ->whereIn('exam.sub_list_id', $subListIds)
             ->select(
                 'exam.exam_id',
@@ -133,18 +173,36 @@ class StudentTaskController extends Controller
                 'exam.start_time',
                 'exam.end_time',
                 'exam.status',
-                'course.course_name as course_name'
+                'course.course_name as course_name',
+                'submission.temporary_score as temporary_score'
             )
-            ->distinct()
+            ->groupBy(
+                'exam.exam_id',
+                'exam.sub_list_id',
+                'exam.title',
+                'exam.content',
+                'exam.type',
+                'exam.isSimultaneous',
+                'exam.start_time',
+                'exam.end_time',
+                'exam.status',
+                'course.course_name',
+                'submission.temporary_score'
+            )
             ->get();
+
 
         // 6. Lấy bài tập (assignment)
         $assignments = DB::table('assignment')
-            ->join('sub_list','assignment.sub_list_id','=','sub_list.sub_list_id')
+            ->join('sub_list', 'assignment.sub_list_id', '=', 'sub_list.sub_list_id')
             ->join('sub_list_question', 'sub_list.sub_list_id', '=', 'sub_list_question.sub_list_id')
             ->join('question', 'sub_list_question.question_id', '=', 'question.question_id')
             ->join('list_question', 'question.list_question_id', '=', 'list_question.list_question_id')
             ->join('course', 'list_question.course_id', '=', 'course.course_id')
+            ->leftJoin('submission', function ($join) use ($studentId) {
+                $join->on('assignment.assignment_id', '=', 'submission.assignment_id')
+                    ->where('submission.student_id', '=', $studentId);
+            })
             ->whereIn('assignment.sub_list_id', $subListIds)
             ->select(
                 'assignment.assignment_id',
@@ -157,10 +215,25 @@ class StudentTaskController extends Controller
                 'assignment.end_time',
                 'assignment.show_result',
                 'assignment.status',
-                'course.course_name as course_name'
+                'course.course_name',
+                'submission.temporary_score'
             )
-            ->distinct()
+            ->groupBy(
+                'assignment.assignment_id',
+                'assignment.sub_list_id',
+                'assignment.title',
+                'assignment.content',
+                'assignment.type',
+                'assignment.isSimultaneous',
+                'assignment.start_time',
+                'assignment.end_time',
+                'assignment.show_result',
+                'assignment.status',
+                'course.course_name',
+                'submission.temporary_score'
+            )
             ->get();
+
 
         return response()->json([
             'exams' => $exams,
@@ -168,24 +241,24 @@ class StudentTaskController extends Controller
         ]);
     }
     public function redirectToProperPage(Request $request)
-{
-    $id = $request->query('id');
+    {
+        $id = $request->query('id');
 
-    $task = Exam::where('exam_id', $id)->first()
-        ?? Assignment::where('assignment_id', $id)->first();
+        $task = Exam::where('exam_id', $id)->first()
+            ?? Assignment::where('assignment_id', $id)->first();
 
-    if (!$task) {
-        return abort(404, 'Không tìm thấy bài thi hoặc bài tập');
+        if (!$task) {
+            return abort(404, 'Không tìm thấy bài thi hoặc bài tập');
+        }
+
+        if ($task->type === 'Tự luận') {
+            return redirect()->route('essay.page', ['id' => $id]);
+        }
+
+        if ($task->type === 'Trắc nghiệm') {
+            return redirect()->route('quiz.page', ['id' => $id]);
+        }
+
+        return abort(400, 'Loại bài không hợp lệ');
     }
-
-    if ($task->type === 'Tự luận') {
-        return redirect()->route('essay.page', ['id' => $id]);
-    }
-
-    if ($task->type === 'Trắc nghiệm') {
-        return redirect()->route('quiz.page', ['id' => $id]);
-    }
-
-    return abort(400, 'Loại bài không hợp lệ');
-}
 }
