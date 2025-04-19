@@ -10,7 +10,7 @@ class LecturerDashboardController extends Controller
 {
     public function index()
     {
-        return view('lecturer.dashboard');
+        return view('submissions.show');
     }
 
     public function examDetail($examId)

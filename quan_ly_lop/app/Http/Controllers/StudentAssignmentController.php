@@ -11,7 +11,7 @@ use App\Models\Student;
 use App\Models\Question;
 use App\Models\Answer;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\DB;
 class StudentAssignmentController extends Controller
 {
     /**
@@ -158,33 +158,78 @@ class StudentAssignmentController extends Controller
     {
         $request->validate([
             'student_id' => 'required|exists:student,student_id',
-            'submission_id' => 'required|exists:submission,submission_id',
+            'exam_id' => 'nullable|exists:exam,exam_id',
+            'assignment_id' => 'nullable|exists:assignment,assignment_id',
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|exists:question,question_id',
             'answers.*.answer_content' => 'required|string',
         ]);
 
-        // Get the submission
-        $submission = Submission::where('submission_id', $request->submission_id)
-            ->where('student_id', $request->student_id)
-            ->first();
+        // Ensure either exam_id or assignment_id is provided
+        if (!$request->exam_id && !$request->assignment_id) {
+            return response()->json(['message' => 'Either exam_id or assignment_id must be provided.'], 400);
+        }
 
+        // Check if the student exists
+        $student = Student::find($request->student_id);
+        if (!$student) {
+            return response()->json(['message' => 'Student not found.'], 404);
+        }
+
+        // Check for existing submission or create a new one
+        $submission = Submission::where('student_id', $request->student_id)
+            ->where(function ($query) use ($request) {
+                if ($request->exam_id) {
+                    $query->where('exam_id', $request->exam_id);
+                } else {
+                    $query->where('assignment_id', $request->assignment_id);
+                }
+            })->first();
+
+        // If submission doesn't exist, create a new one
         if (!$submission) {
-            return response()->json(['message' => 'Submission not found.'], 404);
+            $submissionData = [
+                'submission_id' => Str::random(50),
+                'student_id' => $request->student_id,
+                'created_at' => now()
+            ];
+
+            if ($request->exam_id) {
+                $exam = Exam::find($request->exam_id);
+                $submissionData['exam_id'] = $request->exam_id;
+                $submissionData['is_late'] = now() > $exam->end_time;
+            } else {
+                $assignment = Assignment::find($request->assignment_id);
+                $submissionData['assignment_id'] = $request->assignment_id;
+                $submissionData['is_late'] = now() > $assignment->end_time;
+            }
+
+            $submission = Submission::create($submissionData);
         }
 
         // Store each answer
         foreach ($request->answers as $answerData) {
-            Answer::create([
-                'answer_id' => Str::random(50), // Generating a unique ID
+            $question = Question::find($answerData['question_id']);
+
+            // Create new answer without timestamps
+            DB::table('answer')->insert([
+                'answer_id' => Str::random(50),
                 'submission_id' => $submission->submission_id,
-                'question_title' => Question::find($answerData['question_id'])->title,
-                'question_content' => Question::find($answerData['question_id'])->content,
+                'question_title' => $question->title,
+                'question_content' => $question->content,
                 'question_answer' => $answerData['answer_content'],
             ]);
         }
 
-        return response()->json(['message' => 'Answers submitted successfully!'], 201);
+        // Update submission time
+        $submission->update([
+            'update_at' => now()
+        ]);
+
+        return response()->json([
+            'message' => 'Answers submitted successfully!',
+            'submission_id' => $submission->submission_id
+        ], 201);
     }
 
     /**
